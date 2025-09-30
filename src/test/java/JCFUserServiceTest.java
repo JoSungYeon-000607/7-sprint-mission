@@ -5,79 +5,160 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
-/**
- * JCFUserService의 주요 기능들에 대한 통합 테스트입니다.
- * 실제 JCFUserRepository 인스턴스를 주입하여 서비스와 리포지토리의 상호작용을 함께 검증합니다.
- */
-class JCFUserServiceIntegrationTest {
+import static org.assertj.core.api.Assertions.*;
+
+class JCFUserServiceTest {
 
     private JCFUserService userService;
-    private JCFUserRepository JCFUserRepository;
+    private JCFUserRepository userRepository;
 
-    /**
-     * 각 테스트 실행 전에 독립적인 테스트 환경을 구축합니다.
-     * 의존성 주입(DI) 패턴을 테스트에도 동일하게 적용하여,
-     * 실제 애플리케이션 실행 환경과 테스트 환경의 구조를 일치시킵니다.
-     */
     @BeforeEach
     void setUp() {
-        // 1. 테스트의 '제어권' 하에 있는 새로운 Repository 인스턴스를 생성합니다.
-        //    이를 통해 테스트는 데이터 저장소의 상태를 완벽하게 격리하고 제어할 수 있습니다.
-        this.JCFUserRepository = new JCFUserRepository();
-        // 2. 생성한 Repository를 Service에 '주입'하여 테스트 대상을 설정합니다.
-        //    이로써 Service는 우리가 제어하는 데이터 저장소를 바라보게 됩니다.
-        this.userService = new JCFUserService(this.JCFUserRepository);
+        // 각 테스트는 독립적으로 실행되어야 하므로, 매번 새로운 Repository와 Service 객체를 생성합니다.
+        userRepository = new JCFUserRepository();
+        userService = new JCFUserService(userRepository);
     }
 
     @Test
-    @DisplayName("사용자 생성 성공 시나리오")
-    void userCreation_Success_Scenario() {
-        // Arrange (준비): 사용자 생성을 위한 데이터를 정의합니다.
-        String username = "gemini";
-        String email = "gemini@google.com";
-        String nickname = "AI";
+    @DisplayName("새로운 사용자를 성공적으로 생성한다")
+    void createUser_should_saveNewUser() {
+        // given (준비)
+        String username = "testuser";
+        String password = "password123";
+        String email = "test@example.com";
 
-        // Act (실행): Service의 핵심 비즈니스 로직을 호출합니다.
-        User createdUser = userService.createUser(username, "password123", email, nickname, null);
+        // when (실행)
+        User createdUser = userService.createUser(username, password, email, null, null);
 
-        // Assert (검증): Service가 반환한 결과와 시스템의 최종 상태를 모두 검증합니다.
+        // then (검증)
+        assertThat(createdUser.getId()).isNotNull();
         assertThat(createdUser.getUsername()).isEqualTo(username);
-        assertThat(createdUser.isOnline()).isTrue();
-
-        // [통합 테스트 핵심] Service의 로직이 Repository에 올바르게 반영되었는지,
-        // 데이터의 최종 상태를 직접 확인하여 검증의 신뢰도를 높입니다.
-        User foundUserInRepo = JCFUserRepository.findById(createdUser.getId()).get();
-        assertThat(foundUserInRepo).isEqualTo(createdUser);
+        assertThat(userRepository.count()).isEqualTo(1); // Repository에 실제로 저장되었는지 확인
     }
 
-    // ... (다른 테스트 메서드들도 필요에 따라 상세한 주석 추가) ...
+    @Test
+    @DisplayName("중복된 사용자 이름으로 생성 시 IllegalStateException 예외가 발생한다")
+    void createUser_should_throwException_when_usernameExists() {
+        // given
+        // 먼저 사용자를 하나 생성해둔다.
+        userService.createUser("existingUser", "password123", "exist@example.com", null, null);
+
+        // when & then
+        // 예외가 발생하는 상황을 검증
+        assertThatThrownBy(() -> {
+            userService.createUser("existingUser", "new_password", "new@example.com", null, null);
+        })
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("이미 존재하는 사용자 이름입니다");
+    }
 
     @Test
-    @DisplayName("사용자 프로필 수정 시나리오")
-    void userProfileUpdate_Success_Scenario() {
-        // Arrange (준비)
-        User user = userService.createUser("gemini", "pw", "email@a.com", "Old Nickname", "010-0000-0000");
-        Long initialUpdatedAt = user.getUpdatedAt();
+    @DisplayName("사용자 프로필을 성공적으로 수정한다")
+    void updateProfile_should_changeUserDetails() throws InterruptedException {
+        // given
+        User user = userService.createUser("userToUpdate", "password", "update@example.com", "OldNick", "123");
+        UUID userId = user.getId();
+        long initialUpdatedAt = user.getUpdatedAt();
+        // when
+        User updatedUser = userService.updateProfile(userId, "NewNick", "new.email@example.com", "456");
 
-        // Act (실행): 프로필 수정을 요청합니다.
-        String newNickname = "New Gemini";
-        User updatedUser = userService.updateProfile(user.getId(), newNickname, "new@google.com", null);
+        // then
+        assertThat(updatedUser.getNickname()).isEqualTo("NewNick");
+        assertThat(updatedUser.getEmail()).isEqualTo("new.email@example.com");
+        assertThat(updatedUser.getPhoneNum()).isEqualTo("456");
+        assertThat(updatedUser.getUpdatedAt()).isGreaterThan(initialUpdatedAt); // 수정 시각이 변경되었는지 확인
+    }
 
-        // Assert (검증)
-        User finalUser = userService.findById(user.getId()); // 저장소에서 최종 상태를 다시 명확하게 조회
+    @Test
+    @DisplayName("사용자 이름으로 사용자를 찾을 수 있다")
+    void findByUsername_should_returnUser() {
+        // given
+        String username = "findMe";
+        userService.createUser(username, "password", "find@me.com", null, null);
 
-// 1. 닉네임이 'New Gemini'로 "정확히" 변경되었는가?
-        assertThat(finalUser.getNickname()).isEqualTo("New Gemini");
+        // when
+        User foundUser = userService.findByUsername(username);
 
-// 2. 이메일이 'new@google.com'으로 "정확히" 변경되었는가?
-        assertThat(finalUser.getEmail()).isEqualTo("new@google.com");
+        // then
+        assertThat(foundUser).isNotNull();
+        assertThat(foundUser.getUsername()).isEqualTo(username);
+    }
 
-// 3. 변경하지 않은 phoneNum은 "그대로" 유지되었는가?
-        assertThat(finalUser.getPhoneNum()).isEqualTo("010-0000-0000");
-        // 수정이 일어났으므로, updatedAt 타임스탬프는 초기값보다 커야 합니다.
-        assertThat(updatedUser.getUpdatedAt()).isGreaterThan(initialUpdatedAt);
+    @Test
+    @DisplayName("존재하지 않는 사용자 이름으로 조회 시 NoSuchElementException 예외가 발생한다")
+    void findByUsername_should_throwException_when_userNotFound() {
+        // when & then
+        assertThatThrownBy(() -> {
+            userService.findByUsername("nonExistingUser");
+        })
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    @DisplayName("논리적 삭제(softDelete) 시 사용자는 삭제 플래그만 변경되고 물리적으로 삭제되지 않는다")
+    void softDeleteById_should_setDeletedFlag() {
+        // given
+        User user = userService.createUser("softDeleteUser", "password", "soft@del.com", null, null);
+        UUID userId = user.getId();
+
+        // when
+        userService.softDeleteById(userId);
+
+        // then
+        User deletedUser = userService.findById(userId); // 삭제되었지만 ID로는 조회가 가능해야 함
+        assertThat(deletedUser.isDeleted()).isTrue();
+        assertThat(userRepository.count()).isEqualTo(1); // 물리적 개수는 그대로여야 함
+    }
+
+    @Test
+    @DisplayName("findByIdNonDel은 논리적으로 삭제된 사용자를 조회하지 못해야 한다")
+    void findByIdNonDel_should_throwException_for_softDeletedUser() {
+        // given
+        User user = userService.createUser("softDeleteUser2", "password", "soft2@del.com", null, null);
+        UUID userId = user.getId();
+        userService.softDeleteById(userId);
+
+        // when & then
+        assertThatThrownBy(() -> {
+            userService.findByIdNonDel(userId); // NonDel 메서드로 조회 시 예외 발생해야 함
+        })
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    @DisplayName("findAll은 모든 사용자를, findAllNonDel은 삭제되지 않은 사용자만 반환한다")
+    void findAll_vs_findAllNonDel() {
+        // given
+        userService.createUser("activeUser", "p", "a@c.com", null, null);
+        User userToDelete = userService.createUser("deletedUser", "p", "d@e.com", null, null);
+        userService.softDeleteById(userToDelete.getId());
+
+        // when
+        List<User> allUsers = userService.findAll();
+        List<User> nonDeletedUsers = userService.findAllNonDel();
+
+        // then
+        assertThat(allUsers).hasSize(2);
+        assertThat(nonDeletedUsers).hasSize(1);
+        assertThat(nonDeletedUsers.get(0).getUsername()).isEqualTo("activeUser");
+    }
+
+    @Test
+    @DisplayName("물리적 삭제(deleteById) 시 사용자는 저장소에서 완전히 제거된다")
+    void deleteById_should_removeUserPermanently() {
+        // given
+        User user = userService.createUser("deleteUser", "password", "delete@me.com", null, null);
+        UUID userId = user.getId();
+
+        // when
+        userService.deleteById(userId);
+
+        // then
+        assertThat(userRepository.count()).isEqualTo(0);
+        assertThat(userRepository.existsById(userId)).isFalse();
     }
 }
