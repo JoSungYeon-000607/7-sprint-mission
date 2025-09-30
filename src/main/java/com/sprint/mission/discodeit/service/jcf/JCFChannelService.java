@@ -16,18 +16,15 @@ import java.util.UUID;
 public class JCFChannelService extends JCFBaseService<Channel, UUID, ChannelRepository> implements ChannelService {
 
     private final ChannelRepository channelRepository;
-    private final ChannelUserRepository channelUserRepository; // 일부 로직 처리를 위한 참여자 리포지토리
 
     /**
      * 생성자를 통해 의존성 주입(DI)을 받습니다.
      *
      * @param channelRepository     채널 데이터 처리를 위한 리포지토리
-     * @param channelUserRepository 채널 참여자 데이터 처리를 위한 리포지토리
      */
-    public JCFChannelService(ChannelRepository channelRepository, ChannelUserRepository channelUserRepository) {
+    public JCFChannelService(ChannelRepository channelRepository) {
         super(channelRepository);
         this.channelRepository = channelRepository;
-        this.channelUserRepository = channelUserRepository;
     }
 
     @Override
