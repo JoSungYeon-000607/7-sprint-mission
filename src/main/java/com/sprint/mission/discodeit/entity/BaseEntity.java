@@ -1,5 +1,8 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.Utils.Deletable;
+import com.sprint.mission.discodeit.Utils.Identifiable;
+
 import java.util.UUID;
 
 /**
@@ -7,10 +10,11 @@ import java.util.UUID;
  * - 고유 ID (id)
  * - 생성 시각 (createdAt)
  * - 최종 수정 시각 (updatedAt)
+ * - 논리적 삭제 상태 (isDeleted)
  * <p>
  * `abstract` 키워드를 사용해 이 클래스 자체로는 객체를 만들 수 없으며, 반드시 다른 엔티티가 상속받아 사용해야 합니다.
  */
-public abstract class BaseEntity implements Identifiable<UUID> {
+public abstract class BaseEntity implements Identifiable<UUID>, Deletable {
 
     /**
      * 모든 엔티티를 고유하게 식별하는 ID입니다.
@@ -19,13 +23,13 @@ public abstract class BaseEntity implements Identifiable<UUID> {
     private final UUID id;
 
     /**
-     * 엔티티가 처음 생성된 시각을 저장합니다.
+     * 엔티티가 처음 생성된 시각을 저장합니다. (Unix Timestamp)
      * `final`로 선언하여 변경되지 않도록 보장합니다.
      */
     private final Long createdAt;
 
     /**
-     * 엔티티가 마지막으로 수정된 시각을 저장합니다.
+     * 엔티티가 마지막으로 수정된 시각을 저장합니다. (Unix Timestamp)
      */
     private Long updatedAt;
 
@@ -38,40 +42,37 @@ public abstract class BaseEntity implements Identifiable<UUID> {
 
     /**
      * BaseEntity의 생성자입니다.
-     * 이 클래스를 상속받는 자식 클래스(e.g., User)가 생성될 때 `super()`를 통해 호출됩니다.
+     * 이 클래스를 상속받는 자식 클래스가 생성될 때 `super()`를 통해 호출됩니다.
      * 객체가 생성되는 시점에 ID와 타임스탬프를 초기화하는 역할을 합니다.
      */
-     protected BaseEntity() {
-        // 고유한 UUID를 생성하여 ID로 할당합니다.
+    protected BaseEntity() {
         this.id = UUID.randomUUID();
-        // 현재 시간을 1970년 1월 1일 0시부터의 밀리초 단위(Unix Timestamp)로 가져옵니다.
         long now = System.currentTimeMillis();
-        // 생성 시각과 수정 시각을 현재 시간으로 동일하게 설정합니다.
         this.createdAt = now;
         this.updatedAt = now;
     }
 
     /**
-
-     * 엔티티를 논리적 삭제 상태로 변경합니다.
-     * 데이터는 물리적으로 삭제되지 않고, isDeleted 플래그만 true로 설정됩니다.
+     * {@inheritDoc}
+     * Deletable 인터페이스의 구현부입니다.
+     * isDeleted 플래그를 true로 설정하고, 수정 시각을 갱신합니다.
      */
+    @Override
     public void softDelete() {
         this.isDeleted = true;
         updateTimestamp();
     }
+
     /**
-     * 엔티티가 논리적으로 삭제되었는지 여부를 반환합니다.
-     * @return 삭제되었으면 true, 아니면 false
+     * {@inheritDoc}
      */
+    @Override
     public boolean isDeleted() {
         return isDeleted;
     }
 
     /**
-     * Identifiable 인터페이스의 구현 메서드입니다.
-     * 이 엔티티의 고유 ID를 반환합니다.
-     * @return UUID 타입의 고유 ID
+     * {@inheritDoc}
      */
     @Override
     public UUID getId() {
@@ -80,6 +81,7 @@ public abstract class BaseEntity implements Identifiable<UUID> {
 
     /**
      * 생성 시각을 반환합니다.
+     *
      * @return Long 타입의 Unix Timestamp
      */
     public Long getCreatedAt() {
@@ -88,6 +90,7 @@ public abstract class BaseEntity implements Identifiable<UUID> {
 
     /**
      * 최종 수정 시각을 반환합니다.
+     *
      * @return Long 타입의 Unix Timestamp
      */
     public Long getUpdatedAt() {
@@ -96,7 +99,7 @@ public abstract class BaseEntity implements Identifiable<UUID> {
 
     /**
      * 엔티티의 내용이 변경되었을 때, 최종 수정 시각을 현재 시간으로 갱신하는 메서드입니다.
-     * 자식 클래스의 수정 관련 메서드 <p>(e.g., updateProfile) 내부에서 호출됩니다.
+     * 자식 클래스의 수정 관련 메서드 내부에서 호출됩니다.
      */
     protected void updateTimestamp() {
         this.updatedAt = System.currentTimeMillis();

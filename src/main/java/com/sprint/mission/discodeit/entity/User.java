@@ -1,30 +1,50 @@
 package com.sprint.mission.discodeit.entity;
 
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 사용자 정보를 담는 핵심 도메인 엔티티입니다.
  * 이 클래스는 사용자의 데이터뿐만 아니라, 자신의 상태를 직접 관리하는 비즈니스 로직을 포함합니다.
  * (풍부한 도메인 모델, Rich Domain Model)
  */
-public class User extends BaseEntity implements Identifiable<UUID> {
+public class User extends BaseEntity {
 
     // --- Fields ---
-    private String username;        // 사용자가 로그인 시 사용하는 ID (Natural Key)
+    /**
+     * 사용자가 로그인 시 사용하는 ID (Natural Key)
+     */
+    private String username;
+    /**
+     * 암호화되어 저장되는 사용자 비밀번호
+     */
     private String password;
+    /**
+     * 사용자 이메일 주소
+     */
     private String email;
+    /**
+     * 사용자의 별명
+     */
     private String nickname;
+    /**
+     * 사용자 전화번호
+     */
     private String phoneNum;
-    private State state;            // 사용자의 현재 상태 (ONLINE, OFFLINE 등)
-    private Long lastOnlineAt;      // 마지막으로 온라인이었던 시간
+    /**
+     * 사용자의 현재 상태 (ONLINE, OFFLINE 등)
+     */
+    private State state;
+    /**
+     * 마지막으로 온라인이었던 시간 (Unix Timestamp)
+     */
+    private Long lastOnlineAt;
 
     /**
      * 외부에서 `new User()`를 통해 불완전한 객체를 생성하는 것을 막기 위해 생성자를 protected로 선언합니다.
      * 객체 생성은 반드시 `create()` 정적 팩토리 메서드를 통해서만 이루어져야 합니다.
      */
     protected User() {
-        // BaseEntity의 생성자를 호출하여 createdAt과 updatedAt을 초기화합니다.
+        // BaseEntity의 생성자를 호출하여 공통 필드를 초기화합니다.
         super();
     }
 
@@ -40,7 +60,7 @@ public class User extends BaseEntity implements Identifiable<UUID> {
      * @return 완전히 생성된 User 객체
      */
     public static User create(String username, String rawPassword, String email, String nickname, String phoneNum) {
-        // Guard Clauses: 객체 생성 전 필수 값들을 검증하여 유효하지 않은 객체가 생성되는 것을 원천 차단합니다.
+        // Guard Clauses: 객체 생성 전 필수 값들을 검증합니다.
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("사용자 이름은 필수입니다.");
         }
@@ -51,12 +71,11 @@ public class User extends BaseEntity implements Identifiable<UUID> {
             throw new IllegalArgumentException("이메일은 필수입니다.");
         }
 
-        // 1. protected 생성자를 통해 기본 객체를 생성합니다.
         User user = new User();
 
-        // 2. 전달받은 인자로 필드 값을 설정합니다.
+        // 전달받은 인자로 필드 값을 설정합니다.
         user.username = username;
-        user.password = passwordEncrypt(rawPassword); // 내부 static 헬퍼 메서드를 통해 암호화
+        user.password = passwordEncrypt(rawPassword);
         user.email = email;
         user.nickname = nickname;
         user.phoneNum = phoneNum;
@@ -70,32 +89,27 @@ public class User extends BaseEntity implements Identifiable<UUID> {
      * 사용자 프로필 정보를 수정합니다.
      * 변경된 필드가 있을 경우에만 updatedAt 타임스탬프를 갱신합니다.
      *
-     * @param nickname 새 닉네임. null일 경우 변경하지 않음.
-     * @param email    새 이메일. null일 경우 변경하지 않음.
-     * @param phoneNum 새 전화번호. null일 경우 변경하지 않음.
+     * @param nickname 새 닉네임. null이거나 공백이면 변경하지 않음.
+     * @param email    새 이메일. null이거나 공백이면 변경하지 않음.
+     * @param phoneNum 새 전화번호. null이거나 공백이면 변경하지 않음.
      */
     public void updateProfile(String nickname, String email, String phoneNum) {
-        boolean isChanged = false; // 실제 변경이 일어났는지 추적하는 플래그
+        boolean isChanged = false;
 
-        // 닉네임이 null이 아니고, 기존 값과 다를 때만 변경
         if (nickname != null && !nickname.isBlank() && !nickname.equals(this.nickname)) {
             this.nickname = nickname;
             isChanged = true;
         }
-
-        // 이메일이 null이 아니고, 기존 값과 다를 때만 변경
         if (email != null && !email.isBlank() && !email.equals(this.email)) {
             this.email = email;
             isChanged = true;
         }
-
-        // 전화번호가 null이 아니고, 기존 값과 다를 때만 변경
         if (phoneNum != null && !phoneNum.isBlank() && !phoneNum.equals(this.phoneNum)) {
             this.phoneNum = phoneNum;
             isChanged = true;
         }
 
-        // isChanged 플래그를 통해, 불필요한 updatedAt 갱신을 방지합니다.
+        // 실제 필드 값이 변경되었을 때만 수정 시각을 갱신하여 불필요한 업데이트를 방지합니다.
         if (isChanged) {
             super.updateTimestamp();
         }
@@ -107,7 +121,6 @@ public class User extends BaseEntity implements Identifiable<UUID> {
      * @param newPassword 새로운 비밀번호
      */
     public void changePassword(String newPassword) {
-        // 비밀번호 유효성 검사
         if (newPassword == null || newPassword.length() < 8) {
             throw new IllegalArgumentException("비밀번호는 8자 이상이어야 합니다.");
         }
@@ -139,8 +152,8 @@ public class User extends BaseEntity implements Identifiable<UUID> {
      * '자리 비움으로 설정한다'는 비즈니스 이벤트를 처리합니다.
      * 오프라인 상태에서는 변경할 수 없다는 비즈니스 규칙을 포함합니다.
      */
-    public void setAway() { // Away From Keyboard
-        if (this.isOffline()) { // 자신의 상태 확인 메서드를 재사용
+    public void setAway() {
+        if (this.isOffline()) {
             throw new IllegalStateException("오프라인 상태에서는 자리 비움으로 변경할 수 없습니다.");
         }
         this.state = State.AFK;
@@ -187,17 +200,16 @@ public class User extends BaseEntity implements Identifiable<UUID> {
     public State getState() { return state; }
 
 
-    // ---toString---
     @Override
     public String toString() {
         return "User{" +
+                "id=" + getId() + // BaseEntity의 필드도 포함하여 출력
+                ", createdAt=" + getCreatedAt() +
+                ", isDeleted=" + isDeleted() +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", nickname='" + nickname + '\'' +
-                ", phoneNum='" + phoneNum + '\'' +
                 ", state=" + state +
-                ", lastOnlineAt=" + lastOnlineAt +
                 '}';
     }
 }
