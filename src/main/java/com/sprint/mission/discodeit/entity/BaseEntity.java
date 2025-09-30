@@ -30,6 +30,13 @@ public abstract class BaseEntity implements Identifiable<UUID> {
     private Long updatedAt;
 
     /**
+     * 논리적 삭제(Soft Delete) 상태를 나타내는 플래그입니다.
+     * true이면 삭제된 것으로 간주합니다.
+     */
+    private boolean isDeleted = false;
+
+
+    /**
      * BaseEntity의 생성자입니다.
      * 이 클래스를 상속받는 자식 클래스(e.g., User)가 생성될 때 `super()`를 통해 호출됩니다.
      * 객체가 생성되는 시점에 ID와 타임스탬프를 초기화하는 역할을 합니다.
@@ -42,6 +49,23 @@ public abstract class BaseEntity implements Identifiable<UUID> {
         // 생성 시각과 수정 시각을 현재 시간으로 동일하게 설정합니다.
         this.createdAt = now;
         this.updatedAt = now;
+    }
+
+    /**
+
+     * 엔티티를 논리적 삭제 상태로 변경합니다.
+     * 데이터는 물리적으로 삭제되지 않고, isDeleted 플래그만 true로 설정됩니다.
+     */
+    public void softDelete() {
+        this.isDeleted = true;
+        updateTimestamp();
+    }
+    /**
+     * 엔티티가 논리적으로 삭제되었는지 여부를 반환합니다.
+     * @return 삭제되었으면 true, 아니면 false
+     */
+    public boolean isDeleted() {
+        return isDeleted;
     }
 
     /**

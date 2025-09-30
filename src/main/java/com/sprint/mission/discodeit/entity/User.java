@@ -186,6 +186,7 @@ public class User extends BaseEntity implements Identifiable<UUID> {
     public String getPassword() { return password; }
     public State getState() { return state; }
 
+
     // ---toString---
     @Override
     public String toString() {
