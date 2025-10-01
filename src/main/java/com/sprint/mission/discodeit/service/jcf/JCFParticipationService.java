@@ -3,28 +3,38 @@ package com.sprint.mission.discodeit.service.jcf;
 import com.sprint.mission.discodeit.entity.Participation;
 import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ParticipationRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ParticipationService;
+import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.List;
 import java.util.UUID;
 
 public class JCFParticipationService extends JCFBaseService<Participation, UUID, ParticipationRepository> implements ParticipationService {
     private final ParticipationRepository repository;
-    protected JCFParticipationService(ParticipationRepository repository) {
+    private final UserService userService;
+    private final ChannelService channelService;
+    protected JCFParticipationService(ParticipationRepository repository, ChannelRepository channelRepository, UserRepository userRepository) {
         super(repository);
         this.repository = repository;
+        this.userService = new JCFUserService(userRepository);
+        this.channelService = new JCFChannelService(channelRepository);
     }
 
     @Override
     public Participation joinChannel(UUID channelId, UUID userId, String nickname) {
+        userService.findByIdNonDel(userId);
+        channelService.findByIdNonDel(channelId);
         if(channelId == null){
             throw new IllegalArgumentException("해당 채널을 찾을 수 없습니다.");
         }
         if(userId == null){
             throw new IllegalArgumentException("해당 사용자을 찾을 수 없습니다.");
         }
-        if(isChannelUserExist(channelId, userId)){
+        if(isUserInChannel(channelId, userId)){
             throw new IllegalArgumentException("이미 채널에 참가 되어있습니다.");
         }
         Participation participation = Participation.create(channelId, userId, nickname, Role.USER);
@@ -40,14 +50,25 @@ public class JCFParticipationService extends JCFBaseService<Participation, UUID,
         if(userId == null){
             throw new IllegalArgumentException("해당 사용자을 찾을 수 없습니다.");
         }
-        if(!isChannelUserExist(channelId, userId)){
+        if(!isUserInChannel(channelId, userId)){
             throw new IllegalArgumentException("채널에 참여 되어 있지 않습니다.");
         }
     }
 
     @Override
     public void kickUserFromChannel(UUID channelId, UUID userIdToKick, UUID adminUserId) {
-        if()
+        if(channelId == null){
+            throw new IllegalArgumentException("해당 채널을 찾을 수 없습니다.");
+        }
+        if(userIdToKick == null||adminUserId == null){
+            throw new IllegalArgumentException("해당 사용자을 찾을 수 없습니다.");
+        }
+        if(!isOwner(adminUserId)){
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+        if(!isUserInChannel(userIdToKick, channelId)){
+            throw new IllegalArgumentException("채널에서 해당 유저를 찾을 수 없습니다.");
+        }
     }
 
     @Override
@@ -60,7 +81,7 @@ public class JCFParticipationService extends JCFBaseService<Participation, UUID,
         return null;
     }
     @Override
-    public boolean isChannelOwner(UUID uuid) {
+    public boolean isOwner(UUID uuid) {
         return false;
     }
 
@@ -83,12 +104,5 @@ public class JCFParticipationService extends JCFBaseService<Participation, UUID,
     public void changeNickname(UUID channelId, UUID userId, String newNickname) {
 
     }
-
-    @Override
-    public boolean isChannelUserExist(UUID channelId, UUID userId) {
-        return false;
-    }
-
-
 
 }

@@ -45,18 +45,18 @@ public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID,
     public T findById(ID id) {
         // Repository로부터 Optional<T>를 받아, 비어있을 경우 예외를 던지는 것은 서비스 계층의 책임입니다.
         return repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("ID에 해당하는 데이터를 찾을 수 없습니다: " + id));
+                .orElseThrow(() -> new NoSuchElementException("ID에 해당하는 데이터를 찾을 수 없습니다"));
     }
 
     @Override
     public T findByIdNonDel(ID id) {
         // 1. ID로 데이터를 우선 조회합니다.
         T entity = repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("ID에 해당하는 데이터를 찾을 수 없습니다: " + id));
+                .orElseThrow(() -> new NoSuchElementException("ID에 해당하는 데이터를 찾을 수 없습니다."));
 
         // 2. 서비스 계층에서 "삭제된 데이터는 없는 데이터로 취급한다"는 비즈니스 규칙을 적용합니다.
         if (entity.isDeleted()) {
-            throw new NoSuchElementException("ID에 해당하는 데이터는 존재하지만, 삭제된 상태입니다: " + id);
+            throw new NoSuchElementException("ID에 해당하는 데이터는 존재하지만, 삭제된 상태입니다");
         }
 
         return entity;

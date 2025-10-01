@@ -97,7 +97,6 @@ public interface ParticipationService extends BaseService<Participation, UUID> {
      */
     void changeNickname(UUID channelId, UUID userId, String newNickname);
 
-    boolean isChannelUserExist(UUID channelId, UUID userId);
-    boolean isChannelOwner(UUID uuid);
+    boolean isOwner(UUID uuid);
 
 }
