@@ -108,7 +108,8 @@ public class JCFParticipationService extends JCFBaseService<Participation, UUID,
             throw new IllegalArgumentException("사용자 정보를 가져올 수 없습니다.");
         }
         if(userService.existsById(userId)){
-            throw new IllegalArgumentException("회원 탈퇴한 사용자입니다.");
+
+            throw new IllegalArgumentException("탈퇴한 사용자입니다.");
         }
         if(channelId == null){
             throw new IllegalArgumentException("채널 정보를 가져올 수 없습니다.");
