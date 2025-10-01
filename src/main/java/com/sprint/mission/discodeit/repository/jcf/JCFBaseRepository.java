@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.Utils.Deletable;
-import com.sprint.mission.discodeit.Utils.Identifiable;
+import com.sprint.mission.discodeit.utils.Identifiable;
 import com.sprint.mission.discodeit.repository.BaseRepository;
 
 import java.util.*;
@@ -15,7 +14,7 @@ import java.util.stream.StreamSupport;
  * @param <T>  Identifiable 및 Deletable 인터페이스를 구현한 엔티티 타입
  * @param <ID> 해당 엔티티의 ID 타입
  */
-public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, ID> implements BaseRepository<T, ID> {
+public abstract class JCFBaseRepository<T extends Identifiable<ID> /*Deletable*/, ID> implements BaseRepository<T, ID> {
 
     // 데이터를 메모리에 저장하기 위한 HashMap. ID를 키로 사용하여 O(1) 시간 복잡도로 데이터에 접근합니다.
     protected final Map<ID, T> dataMap = new HashMap<>();
@@ -46,13 +45,13 @@ public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, 
     }
 
 
-    @Override
-    public List<T> findAllNonDel() {
-        // 메모리에 있는 모든 데이터를 스트림으로 처리하여 삭제되지 않은(isDeleted=false) 엔티티만 필터링합니다.
-        return dataMap.values().stream()
-                .filter(entity -> !entity.isDeleted())
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<T> findAllNonDel() {
+//        // 메모리에 있는 모든 데이터를 스트림으로 처리하여 삭제되지 않은(isDeleted=false) 엔티티만 필터링합니다.
+//        return dataMap.values().stream()
+//                .filter(entity -> !entity.isDeleted())
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public List<T> findAllById(Iterable<ID> ids) {
@@ -62,31 +61,31 @@ public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, 
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<T> findAllByIdNonDel(Iterable<ID> ids) {
-        // 먼저 ID 목록으로 모든 엔티티를 조회한 후,
-        List<T> foundEntities = findAllById(ids);
-
-        // 메모리 상에서 삭제되지 않은 엔티티만 필터링합니다.
-        return foundEntities.stream()
-                .filter(entity -> !entity.isDeleted())
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<T> findAllByIdNonDel(Iterable<ID> ids) {
+//        // 먼저 ID 목록으로 모든 엔티티를 조회한 후,
+//        List<T> foundEntities = findAllById(ids);
+//
+//        // 메모리 상에서 삭제되지 않은 엔티티만 필터링합니다.
+//        return foundEntities.stream()
+//                .filter(entity -> !entity.isDeleted())
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public long count() {
         // HashMap의 size() 메서드는 O(1) 시간 복잡도를 가지므로 매우 효율적입니다.
         return dataMap.size();
     }
-
-    @Override
-    public long countNonDel() {
-        // 전체 데이터를 스트림으로 순회하며 조건에 맞는 개수를 계산합니다.
-        // 데이터가 매우 많을 경우 성능에 영향을 줄 수 있습니다.
-        return dataMap.values().stream()
-                .filter(entity -> !entity.isDeleted())
-                .count();
-    }
+//
+//    @Override
+//    public long countNonDel() {
+//        // 전체 데이터를 스트림으로 순회하며 조건에 맞는 개수를 계산합니다.
+//        // 데이터가 매우 많을 경우 성능에 영향을 줄 수 있습니다.
+//        return dataMap.values().stream()
+//                .filter(entity -> !entity.isDeleted())
+//                .count();
+//    }
 
     @Override
     public boolean existsById(ID id) {

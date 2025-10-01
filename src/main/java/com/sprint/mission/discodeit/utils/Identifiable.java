@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.Utils;
+package com.sprint.mission.discodeit.utils;
 
 /**
  * 객체가 고유한 ID를 가지고 있음을 나타내는 인터페이스입니다.

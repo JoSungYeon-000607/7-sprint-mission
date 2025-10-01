@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.Utils;
+package com.sprint.mission.discodeit.utils;
 
 import java.time.Instant;
 import java.time.ZoneId;

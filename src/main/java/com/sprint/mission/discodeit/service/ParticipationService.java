@@ -30,6 +30,8 @@ public interface ParticipationService extends BaseService<Participation, UUID> {
      */
     void leaveChannel(UUID channelId, UUID userId);
 
+    Participation findParticipationByChannelIdAndUserId(UUID channelId, UUID userId);
+
     /**
      * (추천) 관리자/소유자가 다른 사용자를 채널에서 강제로 내보냅니다.
      *

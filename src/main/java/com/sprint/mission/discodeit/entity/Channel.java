@@ -1,7 +1,5 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.util.UUID;
-
 /**
  * 채널의 정보를 담는 핵심 도메인 엔티티입니다.
  * 채널의 생성과 상태 변경에 대한 비즈니스 로직을 포함합니다.
