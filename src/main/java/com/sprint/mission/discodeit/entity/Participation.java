@@ -1,11 +1,10 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.Utils.ParticipationDualKey;
-
 import java.util.UUID;
 
 public class Participation extends BaseEntity{
-    private ParticipationDualKey participationDualKey;
+    private UUID channelId;
+    private UUID userId;
     private String nickname;
     private Role role;
 
@@ -23,7 +22,8 @@ public class Participation extends BaseEntity{
             role = Role.USER;
         }
         Participation participation = new Participation();
-        participation.participationDualKey = new ParticipationDualKey(channelId, userId);
+        participation.userId = userId;
+        participation.channelId = channelId;
         participation.nickname = nickname;
         participation.role = role;
         return participation;
@@ -39,10 +39,10 @@ public class Participation extends BaseEntity{
     }
 
     public UUID getChannelId() {
-        return participationDualKey.channelId();
+        return channelId;
     }
     public UUID getUserId() {
-        return participationDualKey.userId();
+        return userId;
     }
     public String getNickname() {
         return nickname;
@@ -54,9 +54,8 @@ public class Participation extends BaseEntity{
     @Override
     public String toString() {
         return "Participation{" +
-                "channelId=" + participationDualKey.channelId() +
-                ", userId=" + participationDualKey.userId() +
-                "DualKey=" + participationDualKey +
+                "channelId=" + channelId +
+                ", userId=" + userId +
                 ", nickname='" + nickname + '\'' +
                 ", role=" + role +
                 '}';

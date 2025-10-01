@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.repository;
 
-import com.sprint.mission.discodeit.Utils.Deletable;
-import com.sprint.mission.discodeit.Utils.Identifiable;
+import com.sprint.mission.discodeit.utils.Identifiable;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +11,7 @@ import java.util.Optional;
  * @param <T>  리포지토리가 다룰 엔티티 타입 (Identifiable & Deletable을 구현해야 함)
  * @param <ID> 해당 엔티티의 ID 타입
  */
-public interface BaseRepository<T extends Identifiable<ID> & Deletable, ID> {
+public interface BaseRepository<T extends Identifiable<ID> /*Deletable*/, ID> {
 
     /**
      * 주어진 엔티티를 저장하거나 수정합니다.
@@ -43,12 +42,12 @@ public interface BaseRepository<T extends Identifiable<ID> & Deletable, ID> {
      */
     List<T> findAll();
 
-    /**
-     * 논리적으로 삭제되지 않은 모든 엔티티를 조회합니다.
-     *
-     * @return 삭제되지 않은 엔티티를 담은 List
-     */
-    List<T> findAllNonDel();
+//    /**
+//     * 논리적으로 삭제되지 않은 모든 엔티티를 조회합니다.
+//     *
+//     * @return 삭제되지 않은 엔티티를 담은 List
+//     */
+//    List<T> findAllNonDel();
 
     /**
      * 주어진 여러 ID에 해당하는 모든 엔티티를 조회합니다.
@@ -58,13 +57,13 @@ public interface BaseRepository<T extends Identifiable<ID> & Deletable, ID> {
      */
     List<T> findAllById(Iterable<ID> ids);
 
-    /**
-     * 주어진 여러 ID에 해당하는 엔티티 중, 논리적으로 삭제되지 않은 엔티티만 조회합니다.
-     *
-     * @param ids 조회할 엔티티 ID들의 컬렉션
-     * @return 조회된 엔티티들 중 삭제되지 않은 엔티티의 List
-     */
-    List<T> findAllByIdNonDel(Iterable<ID> ids);
+//    /**
+//     * 주어진 여러 ID에 해당하는 엔티티 중, 논리적으로 삭제되지 않은 엔티티만 조회합니다.
+//     *
+//     * @param ids 조회할 엔티티 ID들의 컬렉션
+//     * @return 조회된 엔티티들 중 삭제되지 않은 엔티티의 List
+//     */
+//    List<T> findAllByIdNonDel(Iterable<ID> ids);
 
     /**
      * 전체 엔티티의 개수를 반환합니다. (논리적으로 삭제된 엔티티 포함)
@@ -73,12 +72,12 @@ public interface BaseRepository<T extends Identifiable<ID> & Deletable, ID> {
      */
     long count();
 
-    /**
-     * 논리적으로 삭제되지 않은 전체 엔티티의 개수를 반환합니다.
-     *
-     * @return long 타입의 삭제되지 않은 엔티티 수
-     */
-    long countNonDel();
+//    /**
+//     * 논리적으로 삭제되지 않은 전체 엔티티의 개수를 반환합니다.
+//     *
+//     * @return long 타입의 삭제되지 않은 엔티티 수
+//     */
+//    long countNonDel();
 
     /**
      * 주어진 ID를 가진 엔티티가 존재하는지 확인합니다.
