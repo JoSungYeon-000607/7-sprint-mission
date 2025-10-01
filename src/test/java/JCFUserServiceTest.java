@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -49,9 +48,7 @@ class JCFUserServiceTest {
 
         // when & then
         // 예외가 발생하는 상황을 검증
-        assertThatThrownBy(() -> {
-            userService.createUser("existingUser", "new_password", "new@example.com", null, null);
-        })
+        assertThatThrownBy(() -> userService.createUser("existingUser", "new_password", "new@example.com", null, null))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("이미 존재하는 사용자 이름입니다");
     }
@@ -92,9 +89,7 @@ class JCFUserServiceTest {
     @DisplayName("존재하지 않는 사용자 이름으로 조회 시 NoSuchElementException 예외가 발생한다")
     void findByUsername_should_throwException_when_userNotFound() {
         // when & then
-        assertThatThrownBy(() -> {
-            userService.findByUsername("nonExistingUser");
-        })
+        assertThatThrownBy(() -> userService.findByUsername("nonExistingUser"))
                 .isInstanceOf(NoSuchElementException.class);
     }
     @Test

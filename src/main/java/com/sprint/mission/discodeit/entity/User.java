@@ -1,7 +1,5 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.util.UUID;
-
 /**
  * 사용자 정보를 담는 핵심 도메인 엔티티입니다.
  * 이 클래스는 사용자의 데이터뿐만 아니라, 자신의 상태를 직접 관리하는 비즈니스 로직을 포함합니다.
@@ -205,7 +203,6 @@ public class User extends BaseEntity {
         return "User{" +
                 "id=" + getId() + // BaseEntity의 필드도 포함하여 출력
                 ", createdAt=" + getCreatedAt() +
-                ", isDeleted=" + isDeleted() +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", nickname='" + nickname + '\'' +

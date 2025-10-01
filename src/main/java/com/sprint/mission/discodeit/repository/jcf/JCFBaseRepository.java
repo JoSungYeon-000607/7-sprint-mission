@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.Utils.Deletable;
-import com.sprint.mission.discodeit.Utils.Identifiable;
+import com.sprint.mission.discodeit.utils.Identifiable;
 import com.sprint.mission.discodeit.repository.BaseRepository;
 
 import java.util.*;
@@ -46,13 +45,13 @@ public abstract class JCFBaseRepository<T extends Identifiable<ID> /*Deletable*/
     }
 
 
-    @Override
-    public List<T> findAllNonDel() {
-        // 메모리에 있는 모든 데이터를 스트림으로 처리하여 삭제되지 않은(isDeleted=false) 엔티티만 필터링합니다.
-        return dataMap.values().stream()
-                .filter(entity -> !entity.isDeleted())
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<T> findAllNonDel() {
+//        // 메모리에 있는 모든 데이터를 스트림으로 처리하여 삭제되지 않은(isDeleted=false) 엔티티만 필터링합니다.
+//        return dataMap.values().stream()
+//                .filter(entity -> !entity.isDeleted())
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public List<T> findAllById(Iterable<ID> ids) {
@@ -62,31 +61,31 @@ public abstract class JCFBaseRepository<T extends Identifiable<ID> /*Deletable*/
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<T> findAllByIdNonDel(Iterable<ID> ids) {
-        // 먼저 ID 목록으로 모든 엔티티를 조회한 후,
-        List<T> foundEntities = findAllById(ids);
-
-        // 메모리 상에서 삭제되지 않은 엔티티만 필터링합니다.
-        return foundEntities.stream()
-                .filter(entity -> !entity.isDeleted())
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<T> findAllByIdNonDel(Iterable<ID> ids) {
+//        // 먼저 ID 목록으로 모든 엔티티를 조회한 후,
+//        List<T> foundEntities = findAllById(ids);
+//
+//        // 메모리 상에서 삭제되지 않은 엔티티만 필터링합니다.
+//        return foundEntities.stream()
+//                .filter(entity -> !entity.isDeleted())
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public long count() {
         // HashMap의 size() 메서드는 O(1) 시간 복잡도를 가지므로 매우 효율적입니다.
         return dataMap.size();
     }
-
-    @Override
-    public long countNonDel() {
-        // 전체 데이터를 스트림으로 순회하며 조건에 맞는 개수를 계산합니다.
-        // 데이터가 매우 많을 경우 성능에 영향을 줄 수 있습니다.
-        return dataMap.values().stream()
-                .filter(entity -> !entity.isDeleted())
-                .count();
-    }
+//
+//    @Override
+//    public long countNonDel() {
+//        // 전체 데이터를 스트림으로 순회하며 조건에 맞는 개수를 계산합니다.
+//        // 데이터가 매우 많을 경우 성능에 영향을 줄 수 있습니다.
+//        return dataMap.values().stream()
+//                .filter(entity -> !entity.isDeleted())
+//                .count();
+//    }
 
     @Override
     public boolean existsById(ID id) {

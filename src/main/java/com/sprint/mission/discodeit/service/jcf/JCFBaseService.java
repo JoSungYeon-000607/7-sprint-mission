@@ -1,13 +1,11 @@
 package com.sprint.mission.discodeit.service.jcf;
 
-import com.sprint.mission.discodeit.Utils.Deletable;
-import com.sprint.mission.discodeit.Utils.Identifiable;
+import com.sprint.mission.discodeit.utils.Identifiable;
 import com.sprint.mission.discodeit.repository.BaseRepository;
 import com.sprint.mission.discodeit.service.BaseService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 

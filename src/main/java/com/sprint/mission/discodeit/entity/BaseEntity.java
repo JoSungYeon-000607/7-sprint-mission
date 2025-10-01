@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.Utils.Deletable;
-import com.sprint.mission.discodeit.Utils.Identifiable;
+import com.sprint.mission.discodeit.utils.Identifiable;
 
 import java.util.UUID;
 

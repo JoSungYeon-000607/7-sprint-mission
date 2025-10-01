@@ -47,9 +47,7 @@ class JCFChannelServiceTest {
         channelService.create("중복된-이름", ChannelType.CHAT, null, false);
 
         // when & then
-        assertThatThrownBy(() -> {
-            channelService.create("중복된-이름", ChannelType.CHAT, "다른 토픽", true);
-        })
+        assertThatThrownBy(() -> channelService.create("중복된-이름", ChannelType.CHAT, "다른 토픽", true))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("이미 존재하는 채널 이름입니다");
     }
@@ -82,9 +80,7 @@ class JCFChannelServiceTest {
         Channel channelToUpdate = channelService.create("바꿀-채널", ChannelType.CHAT, null, false);
 
         // when & then
-        assertThatThrownBy(() -> {
-            channelService.changeSettings(channelToUpdate.getId(), "이미-있는-이름", null, null, null);
-        })
+        assertThatThrownBy(() -> channelService.changeSettings(channelToUpdate.getId(), "이미-있는-이름", null, null, null))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -107,9 +103,7 @@ class JCFChannelServiceTest {
     @DisplayName("존재하지 않는 채널 이름으로 조회 시 예외가 발생한다")
     void findByChannelName_should_throwException_when_channelNotFound() {
         // when & then
-        assertThatThrownBy(() -> {
-            channelService.findByChannelName("없는-채널");
-        })
+        assertThatThrownBy(() -> channelService.findByChannelName("없는-채널"))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
