@@ -1,13 +1,12 @@
 package com.sprint.mission.discodeit.service.jcf;
 
-import com.sprint.mission.discodeit.Utils.Deletable;
-import com.sprint.mission.discodeit.Utils.Identifiable;
+import com.sprint.mission.discodeit.utils.Deletable;
+import com.sprint.mission.discodeit.utils.Identifiable;
 import com.sprint.mission.discodeit.repository.BaseRepository;
 import com.sprint.mission.discodeit.service.BaseService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -45,21 +44,14 @@ public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID,
     public T findById(ID id) {
         // Repository로부터 Optional<T>를 받아, 비어있을 경우 예외를 던지는 것은 서비스 계층의 책임입니다.
         return repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("ID에 해당하는 데이터를 찾을 수 없습니다"));
+                .orElseThrow(() -> new NoSuchElementException("해당하는 데이터를 찾을 수 없습니다."));
     }
 
     @Override
     public T findByIdNonDel(ID id) {
-        // 1. ID로 데이터를 우선 조회합니다.
-        T entity = repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("ID에 해당하는 데이터를 찾을 수 없습니다."));
-
-        // 2. 서비스 계층에서 "삭제된 데이터는 없는 데이터로 취급한다"는 비즈니스 규칙을 적용합니다.
-        if (entity.isDeleted()) {
-            throw new NoSuchElementException("ID에 해당하는 데이터는 존재하지만, 삭제된 상태입니다");
-        }
-
-        return entity;
+        // Repository는 삭제된 데이터를 이미 걸러냈으므로, Service는 데이터가 없다는 사실에만 집중하여 예외를 처리합니다.
+        return repository.findByIdNonDel(id)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 데이터를 찾을 수 없거나 이미 삭제되었습니다."));
     }
 
     @Override
@@ -69,9 +61,7 @@ public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID,
 
     @Override
     public boolean existsByIdNonDel(ID id) {
-        // 데이터를 직접 조회하여, 존재하는 동시에 삭제되지 않았는지 확인합니다.
-        Optional<T> optionalEntity = repository.findById(id);
-        return optionalEntity.isPresent() && !optionalEntity.get().isDeleted();
+        return repository.existsByIdNonDel(id);
     }
 
     @Override
@@ -106,15 +96,18 @@ public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID,
 
     @Override
     public void deleteById(ID id) {
-        // 데이터를 삭제하기 전에, 실제로 존재하는지 먼저 확인하는 방어 로직을 추가합니다.
+        // 서비스 계층의 비즈니스 규칙: "존재하지 않는 데이터는 삭제할 수 없다."
+        // 이 규칙을 검증한 후, Repository에 삭제 명령을 내립니다.
         if (!repository.existsById(id)) {
-            throw new NoSuchElementException("삭제할 데이터가 존재하지 않습니다: " + id);
+            throw new NoSuchElementException("삭제할 데이터가 존재하지 않습니다.");
         }
         repository.deleteById(id);
     }
 
     @Override
     public void deleteAllById(Iterable<ID> ids) {
+        // deleteAllById는 여러 건을 삭제하므로, 일부가 존재하지 않더라도 예외를 던지지 않고 존재하는 것만 지우는 것이 일반적인 정책입니다.
+        // 만약 모든 ID가 반드시 존재해야 한다면, 여기서 추가적인 검증 로직이 필요합니다.
         repository.deleteAllById(ids);
     }
 
@@ -125,9 +118,9 @@ public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID,
 
     @Override
     public void softDeleteById(ID id) {
-        // 'find-modify-save' 패턴을 사용하여 논리적 삭제를 구현합니다.
-        // 1. Find: ID로 엔티티를 조회합니다. (없으면 findById 내부에서 예외 발생)
-        T entity = findById(id);
+        // [개선된 부분] 'find-modify-save' 패턴에서 findByIdNonDel을 사용합니다.
+        // 1. Find: 삭제되지 않은 엔티티를 조회합니다. (없거나 이미 삭제되었다면 여기서 예외 발생)
+        T entity = findByIdNonDel(id);
 
         // 2. Modify: 엔티티의 상태 변경 책임을 엔티티 자신에게 위임합니다.
         entity.softDelete();
@@ -138,8 +131,18 @@ public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID,
 
     @Override
     public void softDeleteAll() {
-        List<T> entities = repository.findAll();
-        entities.forEach(T::softDelete);
-        repository.saveAll(entities);
+        // [개선된 부분] 삭제되지 않은 모든 엔티티를 조회하여 처리하는 것이 더 효율적입니다.
+        List<T> nonDeletedEntities = repository.findAllNonDel();
+        nonDeletedEntities.forEach(T::softDelete);
+        repository.saveAll(nonDeletedEntities);
+    }
+
+    /**
+     * 논리적으로 삭제 처리된 모든 데이터를 영구적으로 제거하는 비즈니스 로직을 수행합니다.
+     * 데이터 로깅처리가 완료된 이후 실행하여야합니다.
+     */
+    @Override
+    public void deleteAllByIsDel() {
+        repository.deleteAllByIsDel();
     }
 }

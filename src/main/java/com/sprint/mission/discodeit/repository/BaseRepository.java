@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.repository;
 
-import com.sprint.mission.discodeit.Utils.Deletable;
-import com.sprint.mission.discodeit.Utils.Identifiable;
+import com.sprint.mission.discodeit.utils.Deletable;
+import com.sprint.mission.discodeit.utils.Identifiable;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,12 +29,20 @@ public interface BaseRepository<T extends Identifiable<ID> & Deletable, ID> {
     void saveAll(Iterable<T> entities);
 
     /**
-     * 고유 ID로 특정 엔티티를 조회합니다.
+     * 고유 ID로 특정 엔티티를 조회합니다. (논리적 삭제 여부와 관계없이 조회)
      *
      * @param id 조회할 엔티티의 ID
      * @return 엔티티가 존재하면 Optional<T>로 감싸서 반환하고, 없으면 Optional.empty()를 반환합니다.
      */
     Optional<T> findById(ID id);
+
+    /**
+     * 고유 ID로 논리적으로 삭제되지 않은 특정 엔티티를 조회합니다.
+     *
+     * @param id 조회할 엔티티의 ID
+     * @return 엔티티가 존재하고 삭제되지 않았으면 Optional<T>로, 없거나 삭제되었으면 Optional.empty()를 반환합니다.
+     */
+    Optional<T> findByIdNonDel(ID id);
 
     /**
      * 저장소의 모든 엔티티를 조회합니다. (논리적으로 삭제된 엔티티 포함)
@@ -81,12 +89,20 @@ public interface BaseRepository<T extends Identifiable<ID> & Deletable, ID> {
     long countNonDel();
 
     /**
-     * 주어진 ID를 가진 엔티티가 존재하는지 확인합니다.
+     * 주어진 ID를 가진 엔티티가 존재하는지 확인합니다. (논리적 삭제 여부와 관계없이 확인)
      *
      * @param id 확인할 엔티티의 ID
      * @return 존재하면 true, 아니면 false
      */
     boolean existsById(ID id);
+
+    /**
+     * 주어진 ID를 가진, 논리적으로 삭제되지 않은 엔티티가 존재하는지 확인합니다.
+     *
+     * @param id 확인할 엔티티의 ID
+     * @return 존재하며 삭제되지 않았으면 true, 아니면 false
+     */
+    boolean existsByIdNonDel(ID id);
 
     /**
      * 고유 ID로 특정 엔티티를 물리적으로 삭제합니다.
@@ -106,4 +122,10 @@ public interface BaseRepository<T extends Identifiable<ID> & Deletable, ID> {
      * @param ids 삭제할 엔티티 ID들의 컬렉션
      */
     void deleteAllById(Iterable<ID> ids);
+
+    /**
+     * 논리적으로 삭제된 모든 엔티티를 물리적으로 삭제합니다.
+     * (Soft Delete된 데이터를 영구적으로 제거합니다)
+     */
+    void deleteAllByIsDel();
 }

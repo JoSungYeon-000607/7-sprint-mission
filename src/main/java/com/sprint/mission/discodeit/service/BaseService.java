@@ -30,7 +30,7 @@ public interface BaseService<T, ID> {
     List<T> saveAll(Iterable<T> entities);
 
     /**
-     * 고유 ID로 특정 엔티티를 조회합니다.
+     * 고유 ID로 특정 엔티티를 조회합니다. (논리적 삭제 여부와 관계없이 조회)
      *
      * @param id 조회할 엔티티의 ID
      * @return 조회된 엔티티 객체
@@ -39,16 +39,16 @@ public interface BaseService<T, ID> {
     T findById(ID id);
 
     /**
-     * 고유 ID로 삭제되지 않은 특정 엔티티를 조회합니다.
+     * 고유 ID로 논리적으로 삭제되지 않은 특정 엔티티를 조회합니다.
      *
      * @param id 조회할 엔티티의 ID
      * @return 조회된 엔티티 객체
-     * @throws NoSuchElementException 해당 ID의 엔티티가 없거나 삭제된 상태일 경우
+     * @throws NoSuchElementException 해당 ID의 엔티티가 없거나 이미 삭제된 상태일 경우
      */
     T findByIdNonDel(ID id);
 
     /**
-     * 주어진 ID를 가진 엔티티가 존재하는지 확인합니다.
+     * 주어진 ID를 가진 엔티티가 존재하는지 확인합니다. (논리적 삭제 여부와 관계없이 확인)
      *
      * @param id 확인할 엔티티의 ID
      * @return 존재하면 true, 아니면 false
@@ -56,7 +56,7 @@ public interface BaseService<T, ID> {
     boolean existsById(ID id);
 
     /**
-     * 주어진 ID를 가진, 삭제되지 않은 엔티티가 존재하는지 확인합니다.
+     * 주어진 ID를 가진, 논리적으로 삭제되지 않은 엔티티가 존재하는지 확인합니다.
      *
      * @param id 확인할 엔티티의 ID
      * @return 존재하며 삭제되지 않았으면 true, 아니면 false
@@ -64,7 +64,7 @@ public interface BaseService<T, ID> {
     boolean existsByIdNonDel(ID id);
 
     /**
-     * 모든 엔티티를 조회합니다.
+     * 모든 엔티티를 조회합니다. (논리적으로 삭제된 엔티티 포함)
      *
      * @return 모든 엔티티를 담은 List, 없으면 빈 리스트를 반환
      */
@@ -94,7 +94,7 @@ public interface BaseService<T, ID> {
     List<T> findAllByIdNonDel(Iterable<ID> ids);
 
     /**
-     * 전체 엔티티 수를 반환합니다.
+     * 전체 엔티티 수를 반환합니다. (논리적으로 삭제된 엔티티 포함)
      *
      * @return long 타입의 전체 엔티티 수
      */
@@ -111,6 +111,7 @@ public interface BaseService<T, ID> {
      * 고유 ID로 특정 엔티티를 물리적으로 삭제합니다.
      *
      * @param id 삭제할 엔티티의 ID
+     * @throws NoSuchElementException 삭제할 데이터가 존재하지 않을 경우
      */
     void deleteById(ID id);
 
@@ -130,15 +131,18 @@ public interface BaseService<T, ID> {
      * 고유 ID로 특정 엔티티를 논리적으로 삭제(Soft Delete)합니다.
      *
      * @param id 논리적으로 삭제할 엔티티의 ID
-     *
-     *   **실제 데이터는 남아있습니다.**
+     * @throws NoSuchElementException 삭제할 데이터가 존재하지 않거나 이미 삭제된 경우
      */
     void softDeleteById(ID id);
 
     /**
      * 모든 엔티티를 논리적으로 삭제합니다.
-     *
-     *  **실제 데이터는 남아있습니다.**
      */
     void softDeleteAll();
+
+    /**
+     * 논리적으로 삭제(Soft Delete)된 모든 데이터를 영구적으로 삭제합니다.
+     * 주로 관리자 기능이나 데이터 정리(batch) 작업에 사용될 수 있습니다.
+     */
+    void deleteAllByIsDel();
 }

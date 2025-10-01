@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.Utils.Deletable;
-import com.sprint.mission.discodeit.Utils.Identifiable;
+import com.sprint.mission.discodeit.utils.Deletable;
+import com.sprint.mission.discodeit.utils.Identifiable;
 import com.sprint.mission.discodeit.repository.BaseRepository;
 
 import java.util.*;
@@ -36,6 +36,20 @@ public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, 
     public Optional<T> findById(ID id) {
         // dataMap.get()은 키가 없으면 null을 반환하며, Optional.ofNullable()을 통해 안전하게 감싸줍니다.
         return Optional.ofNullable(dataMap.get(id));
+    }
+
+    @Override
+    public Optional<T> findByIdNonDel(ID id) {
+        // ID를 기반으로 데이터를 우선 찾습니다.
+        T entity = dataMap.get(id);
+
+        // 데이터가 존재하고(not null) 동시에 삭제되지 않은(isDeleted=false) 경우에만 Optional로 감싸 반환합니다.
+        if (entity != null && !entity.isDeleted()) {
+            return Optional.of(entity);
+        }
+
+        // 데이터가 없거나, 이미 삭제된 상태라면 빈 Optional을 반환합니다.
+        return Optional.empty();
     }
 
     @Override
@@ -95,6 +109,14 @@ public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, 
     }
 
     @Override
+    public boolean existsByIdNonDel(ID id) {
+        // [개선된 부분] findByIdNonDel을 호출하는 대신, 직접 데이터를 조회하여 확인하는 것이 더 효율적입니다.
+        T entity = dataMap.get(id);
+        // 데이터가 존재하고, 동시에 논리적으로 삭제되지 않았는지 확인합니다.
+        return entity != null && !entity.isDeleted();
+    }
+
+    @Override
     public void deleteById(ID id) {
         dataMap.remove(id);
     }
@@ -108,5 +130,21 @@ public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, 
     @Override
     public void deleteAllById(Iterable<ID> ids) {
         ids.forEach(this::deleteById);
+    }
+
+    /**
+     * 저장소에 있는 모든 엔티티 중, 논리적으로 삭제된(isDeleted=true) 상태의 모든 데이터를 물리적으로 제거합니다.
+     */
+    @Override
+    public void deleteAllByIsDel() {
+        // 1. dataMap에서 논리적으로 삭제된(isDeleted=true) 엔티티들의 ID 목록을 찾습니다.
+        //    - 스트림을 중간에 toList()로 수집하여 ConcurrentModificationException을 방지합니다.
+        List<ID> idsToDelete = dataMap.values().stream()
+                .filter(Deletable::isDeleted)
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
+
+        // 2. 찾아낸 ID 목록을 순회하며 dataMap에서 해당 엔티티를 제거합니다.
+        idsToDelete.forEach(dataMap::remove);
     }
 }
