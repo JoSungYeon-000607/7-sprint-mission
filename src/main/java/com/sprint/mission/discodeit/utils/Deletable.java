@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.Utils;
+package com.sprint.mission.discodeit.utils;
 
 /**
  * 객체가 논리적 삭제(Soft Delete)를 지원함을 나타내는 인터페이스입니다.
