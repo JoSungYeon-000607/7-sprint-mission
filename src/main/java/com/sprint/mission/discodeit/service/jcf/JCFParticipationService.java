@@ -26,14 +26,7 @@ public class JCFParticipationService extends JCFBaseService<Participation, UUID,
 
     @Override
     public Participation joinChannel(UUID channelId, UUID userId, String nickname) {
-        userService.findByIdNonDel(userId);
-        channelService.findByIdNonDel(channelId);
-        if(channelId == null){
-            throw new IllegalArgumentException("해당 채널을 찾을 수 없습니다.");
-        }
-        if(userId == null){
-            throw new IllegalArgumentException("해당 사용자을 찾을 수 없습니다.");
-        }
+        this.userAndChannelCheck(channelId, userId);
         if(isUserInChannel(channelId, userId)){
             throw new IllegalArgumentException("이미 채널에 참가 되어있습니다.");
         }
@@ -44,12 +37,7 @@ public class JCFParticipationService extends JCFBaseService<Participation, UUID,
 
     @Override
     public void leaveChannel(UUID channelId, UUID userId) {
-        if(channelId == null){
-            throw new IllegalArgumentException("해당 채널을 찾을 수 없습니다.");
-        }
-        if(userId == null){
-            throw new IllegalArgumentException("해당 사용자을 찾을 수 없습니다.");
-        }
+        this.userAndChannelCheck(channelId, userId);
         if(!isUserInChannel(channelId, userId)){
             throw new IllegalArgumentException("채널에 참여 되어 있지 않습니다.");
         }
@@ -105,4 +93,19 @@ public class JCFParticipationService extends JCFBaseService<Participation, UUID,
 
     }
 
+
+    private void userAndChannelCheck(UUID channelId, UUID userId){
+        if(userId == null){
+            throw new IllegalArgumentException("사용자 정보를 가져올 수 없습니다.");
+        }
+        if(userService.existsById(userId)){
+            throw new IllegalArgumentException("탈퇴한 사용자입니다.");
+        }
+        if(channelId == null){
+            throw new IllegalArgumentException("채널 정보를 가져올 수 없습니다.");
+        }
+        if(channelService.existsById(channelId)){
+            throw new IllegalArgumentException("삭제된 채널입니다.");
+        }
+    }
 }

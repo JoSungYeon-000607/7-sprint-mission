@@ -14,7 +14,7 @@ import java.util.UUID;
  * <p>
  * `abstract` 키워드를 사용해 이 클래스 자체로는 객체를 만들 수 없으며, 반드시 다른 엔티티가 상속받아 사용해야 합니다.
  */
-public abstract class BaseEntity implements Identifiable<UUID>, Deletable {
+public abstract class BaseEntity implements Identifiable<UUID> /*Deletable*/ {
 
     /**
      * 모든 엔티티를 고유하게 식별하는 ID입니다.
@@ -32,12 +32,12 @@ public abstract class BaseEntity implements Identifiable<UUID>, Deletable {
      * 엔티티가 마지막으로 수정된 시각을 저장합니다. (Unix Timestamp)
      */
     private Long updatedAt;
-
-    /**
-     * 논리적 삭제(Soft Delete) 상태를 나타내는 플래그입니다.
-     * true이면 삭제된 것으로 간주합니다.
-     */
-    private boolean isDeleted = false;
+//
+//    /**
+//     * 논리적 삭제(Soft Delete) 상태를 나타내는 플래그입니다.
+//     * true이면 삭제된 것으로 간주합니다.
+//     */
+//    private boolean isDeleted = false;
 
 
     /**
@@ -57,19 +57,19 @@ public abstract class BaseEntity implements Identifiable<UUID>, Deletable {
      * Deletable 인터페이스의 구현부입니다.
      * isDeleted 플래그를 true로 설정하고, 수정 시각을 갱신합니다.
      */
-    @Override
-    public void softDelete() {
-        this.isDeleted = true;
-        updateTimestamp();
-    }
+//    @Override
+//    public void softDelete() {
+//        this.isDeleted = true;
+//        updateTimestamp();
+//    }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public boolean isDeleted() {
-        return isDeleted;
-    }
+//    @Override
+//    public boolean isDeleted() {
+//        return isDeleted;
+//    }
 
     /**
      * {@inheritDoc}

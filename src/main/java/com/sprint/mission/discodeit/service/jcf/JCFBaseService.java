@@ -19,7 +19,7 @@ import java.util.stream.StreamSupport;
  * @param <ID> 엔티티의 ID 타입
  * @param <R>  해당 엔티티를 다루는 {@link BaseRepository}의 하위 타입
  */
-public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID, R extends BaseRepository<T, ID>>
+public abstract class JCFBaseService<T extends Identifiable<ID>  /*Deletable*/, ID, R extends BaseRepository<T, ID>>
         implements BaseService<T, ID> {
 
     protected final R repository;
@@ -48,61 +48,61 @@ public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID,
                 .orElseThrow(() -> new NoSuchElementException("ID에 해당하는 데이터를 찾을 수 없습니다"));
     }
 
-    @Override
-    public T findByIdNonDel(ID id) {
-        // 1. ID로 데이터를 우선 조회합니다.
-        T entity = repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("ID에 해당하는 데이터를 찾을 수 없습니다."));
-
-        // 2. 서비스 계층에서 "삭제된 데이터는 없는 데이터로 취급한다"는 비즈니스 규칙을 적용합니다.
-        if (entity.isDeleted()) {
-            throw new NoSuchElementException("ID에 해당하는 데이터는 존재하지만, 삭제된 상태입니다");
-        }
-
-        return entity;
-    }
+//    @Override
+//    public T findByIdNonDel(ID id) {
+//        // 1. ID로 데이터를 우선 조회합니다.
+//        T entity = repository.findById(id)
+//                .orElseThrow(() -> new NoSuchElementException("ID에 해당하는 데이터를 찾을 수 없습니다."));
+//
+//        // 2. 서비스 계층에서 "삭제된 데이터는 없는 데이터로 취급한다"는 비즈니스 규칙을 적용합니다.
+//        if (entity.isDeleted()) {
+//            throw new NoSuchElementException("ID에 해당하는 데이터는 존재하지만, 삭제된 상태입니다");
+//        }
+//
+//        return entity;
+//    }
 
     @Override
     public boolean existsById(ID id) {
         return repository.existsById(id);
     }
 
-    @Override
-    public boolean existsByIdNonDel(ID id) {
-        // 데이터를 직접 조회하여, 존재하는 동시에 삭제되지 않았는지 확인합니다.
-        Optional<T> optionalEntity = repository.findById(id);
-        return optionalEntity.isPresent() && !optionalEntity.get().isDeleted();
-    }
+//    @Override
+//    public boolean existsByIdNonDel(ID id) {
+//        // 데이터를 직접 조회하여, 존재하는 동시에 삭제되지 않았는지 확인합니다.
+//        Optional<T> optionalEntity = repository.findById(id);
+//        return optionalEntity.isPresent() && !optionalEntity.get().isDeleted();
+//    }
 
     @Override
     public List<T> findAll() {
         return repository.findAll();
     }
 
-    @Override
-    public List<T> findAllNonDel() {
-        return repository.findAllNonDel();
-    }
+//    @Override
+//    public List<T> findAllNonDel() {
+//        return repository.findAllNonDel();
+//    }
 
     @Override
     public List<T> findAllById(Iterable<ID> ids) {
         return repository.findAllById(ids);
     }
 
-    @Override
-    public List<T> findAllByIdNonDel(Iterable<ID> ids) {
-        return repository.findAllByIdNonDel(ids);
-    }
+//    @Override
+//    public List<T> findAllByIdNonDel(Iterable<ID> ids) {
+//        return repository.findAllByIdNonDel(ids);
+//    }
 
     @Override
     public long count() {
         return repository.count();
     }
 
-    @Override
-    public long countNonDel() {
-        return repository.countNonDel();
-    }
+//    @Override
+//    public long countNonDel() {
+//        return repository.countNonDel();
+//    }
 
     @Override
     public void deleteById(ID id) {
@@ -123,23 +123,23 @@ public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID,
         repository.deleteAll();
     }
 
-    @Override
-    public void softDeleteById(ID id) {
-        // 'find-modify-save' 패턴을 사용하여 논리적 삭제를 구현합니다.
-        // 1. Find: ID로 엔티티를 조회합니다. (없으면 findById 내부에서 예외 발생)
-        T entity = findById(id);
+//    @Override
+//    public void softDeleteById(ID id) {
+//        // 'find-modify-save' 패턴을 사용하여 논리적 삭제를 구현합니다.
+//        // 1. Find: ID로 엔티티를 조회합니다. (없으면 findById 내부에서 예외 발생)
+//        T entity = findById(id);
+//
+//        // 2. Modify: 엔티티의 상태 변경 책임을 엔티티 자신에게 위임합니다.
+//        entity.softDelete();
+//
+//        // 3. Save: 변경된 상태를 저장소에 다시 저장(업데이트)합니다.
+//        repository.save(entity);
+//    }
 
-        // 2. Modify: 엔티티의 상태 변경 책임을 엔티티 자신에게 위임합니다.
-        entity.softDelete();
-
-        // 3. Save: 변경된 상태를 저장소에 다시 저장(업데이트)합니다.
-        repository.save(entity);
-    }
-
-    @Override
-    public void softDeleteAll() {
-        List<T> entities = repository.findAll();
-        entities.forEach(T::softDelete);
-        repository.saveAll(entities);
-    }
+//    @Override
+//    public void softDeleteAll() {
+//        List<T> entities = repository.findAll();
+//        entities.forEach(T::softDelete);
+//        repository.saveAll(entities);
+//    }
 }

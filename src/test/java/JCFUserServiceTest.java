@@ -97,56 +97,6 @@ class JCFUserServiceTest {
         })
                 .isInstanceOf(NoSuchElementException.class);
     }
-
-    @Test
-    @DisplayName("논리적 삭제(softDelete) 시 사용자는 삭제 플래그만 변경되고 물리적으로 삭제되지 않는다")
-    void softDeleteById_should_setDeletedFlag() {
-        // given
-        User user = userService.createUser("softDeleteUser", "password", "soft@del.com", null, null);
-        UUID userId = user.getId();
-
-        // when
-        userService.softDeleteById(userId);
-
-        // then
-        User deletedUser = userService.findById(userId); // 삭제되었지만 ID로는 조회가 가능해야 함
-        assertThat(deletedUser.isDeleted()).isTrue();
-        assertThat(userRepository.count()).isEqualTo(1); // 물리적 개수는 그대로여야 함
-    }
-
-    @Test
-    @DisplayName("findByIdNonDel은 논리적으로 삭제된 사용자를 조회하지 못해야 한다")
-    void findByIdNonDel_should_throwException_for_softDeletedUser() {
-        // given
-        User user = userService.createUser("softDeleteUser2", "password", "soft2@del.com", null, null);
-        UUID userId = user.getId();
-        userService.softDeleteById(userId);
-
-        // when & then
-        assertThatThrownBy(() -> {
-            userService.findByIdNonDel(userId); // NonDel 메서드로 조회 시 예외 발생해야 함
-        })
-                .isInstanceOf(NoSuchElementException.class);
-    }
-
-    @Test
-    @DisplayName("findAll은 모든 사용자를, findAllNonDel은 삭제되지 않은 사용자만 반환한다")
-    void findAll_vs_findAllNonDel() {
-        // given
-        userService.createUser("activeUser", "p", "a@c.com", null, null);
-        User userToDelete = userService.createUser("deletedUser", "p", "d@e.com", null, null);
-        userService.softDeleteById(userToDelete.getId());
-
-        // when
-        List<User> allUsers = userService.findAll();
-        List<User> nonDeletedUsers = userService.findAllNonDel();
-
-        // then
-        assertThat(allUsers).hasSize(2);
-        assertThat(nonDeletedUsers).hasSize(1);
-        assertThat(nonDeletedUsers.get(0).getUsername()).isEqualTo("activeUser");
-    }
-
     @Test
     @DisplayName("물리적 삭제(deleteById) 시 사용자는 저장소에서 완전히 제거된다")
     void deleteById_should_removeUserPermanently() {
