@@ -1,3 +1,5 @@
+package com.sprint.mission.discodeit;
+
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
 import com.sprint.mission.discodeit.service.jcf.JCFUserService;

@@ -36,7 +36,7 @@ public class JCFUserService extends JCFBaseService<User, UUID, UserRepository> i
     @Override
     public User updateProfile(UUID userId, String nickname, String email, String phoneNum) {
         // 1. ID로 사용자를 찾아(Find),
-        User user = findById(userId);
+        User user = findByIdNonDel(userId);
         // 2. 엔티티의 상태를 변경(Modify)하고 저장(Save)합니다.
         user.updateProfile(nickname, email, phoneNum);
         userRepository.save(user);
@@ -45,35 +45,35 @@ public class JCFUserService extends JCFBaseService<User, UUID, UserRepository> i
 
     @Override
     public void goOnline(UUID userId) {
-        User user = findById(userId);
+        User user = findByIdNonDel(userId);
         user.goOnline();
         userRepository.save(user);
     }
 
     @Override
     public void goOffline(UUID userId) {
-        User user = findById(userId);
+        User user = findByIdNonDel(userId);
         user.goOffline();
         userRepository.save(user);
     }
 
     @Override
     public void setAway(UUID userId) {
-        User user = findById(userId);
+        User user = findByIdNonDel(userId);
         user.setAway();
         userRepository.save(user);
     }
 
     @Override
     public void setDoNotDisturb(UUID userId) {
-        User user = findById(userId);
+        User user = findByIdNonDel(userId);
         user.setDoNotDisturb();
         userRepository.save(user);
     }
 
     @Override
     public void changePassword(UUID userId, String newPassword) {
-        User user = findById(userId);
+        User user = findByIdNonDel(userId);
         user.changePassword(newPassword);
         userRepository.save(user);
     }
@@ -95,24 +95,24 @@ public class JCFUserService extends JCFBaseService<User, UUID, UserRepository> i
     @Override
     public boolean isOnline(UUID userId) {
         // 상태 확인의 책임은 서비스가 아닌, 엔티티 자신에게 위임합니다.
-        return findById(userId).isOnline();
+        return findByIdNonDel(userId).isOnline();
     }
 
     @Override
     public boolean isOffline(UUID userId) {
-        return findById(userId).isOffline();
+        return findByIdNonDel(userId).isOffline();
     }
 
 
 
     @Override
     public boolean isAway(UUID userId) {
-        return findById(userId).isAway();
+        return findByIdNonDel(userId).isAway();
     }
 
     @Override
     public boolean isDoNotDisturb(UUID userId) {
-        return findById(userId).isDoNotDisturb();
+        return findByIdNonDel(userId).isDoNotDisturb();
     }
 
 }

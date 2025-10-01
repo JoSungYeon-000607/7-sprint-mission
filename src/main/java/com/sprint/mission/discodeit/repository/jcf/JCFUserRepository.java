@@ -36,4 +36,29 @@ public class JCFUserRepository extends JCFBaseRepository<User, UUID> implements 
         return dataMap.values().stream()
                 .anyMatch(user -> user.getUsername().equals(username));
     }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>[성능 주의]</b> 모든 사용자 데이터를 순회(O(n))하여 논리적으로 삭제되지 않고
+     * 사용자 이름이 일치하는 첫 번째 사용자를 찾습니다.
+     */
+    @Override
+    public Optional<User> findByUsernameNonDel(String username) {
+        return dataMap.values().stream()
+                .filter(user -> !user.isDeleted() && user.getUsername().equals(username)) // 두 조건을 한 번에 필터링
+                .findFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>[성능 주의]</b> 모든 사용자 데이터를 순회(O(n))하여 논리적으로 삭제되지 않고
+     * 사용자 이름이 일치하는 사용자가 있는지 확인합니다.
+     */
+    @Override
+    public boolean existsByUsernameNonDel(String username) {
+        return dataMap.values().stream()
+                .anyMatch(user -> !user.isDeleted() && user.getUsername().equals(username)); // 두 조건을 한 번에 확인
+    }
 }
