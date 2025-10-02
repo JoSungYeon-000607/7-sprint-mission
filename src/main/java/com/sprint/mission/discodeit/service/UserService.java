@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.entity.User;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -117,4 +118,8 @@ public interface UserService extends BaseService<User, UUID> {
      * @return 방해 금지 상태이면 true, 아니면 false
      */
     boolean isDoNotDisturb(UUID userId);
+
+    User findByUsernameNonDel(String username);
+
+    boolean existsByUsernameNonDel(String username);
 }

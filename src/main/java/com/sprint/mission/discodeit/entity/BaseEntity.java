@@ -14,13 +14,13 @@ import java.util.UUID;
  * <p>
  * `abstract` 키워드를 사용해 이 클래스 자체로는 객체를 만들 수 없으며, 반드시 다른 엔티티가 상속받아 사용해야 합니다.
  */
-public abstract class BaseEntity implements Identifiable<UUID>, Deletable {
+public abstract class BaseEntity<T> implements Identifiable<T>, Deletable {
 
     /**
      * 모든 엔티티를 고유하게 식별하는 ID입니다.
      * `final`로 선언하여 한 번 할당된 후에는 절대 변경되지 않도록 보장합니다.
      */
-    private final UUID id;
+    private final T id;
 
     /**
      * 엔티티가 처음 생성된 시각을 저장합니다. (Unix Timestamp)
@@ -41,12 +41,15 @@ public abstract class BaseEntity implements Identifiable<UUID>, Deletable {
 
 
     /**
-     * BaseEntity의 생성자입니다.
-     * 이 클래스를 상속받는 자식 클래스가 생성될 때 `super()`를 통해 호출됩니다.
-     * 객체가 생성되는 시점에 ID와 타임스탬프를 초기화하는 역할을 합니다.
+     * 자식 클래스로부터 생성된 ID를 전달받는 생성자입니다.
+     * ID 생성의 책임을 자식에게 위임합니다.
+     * @param id 자식 클래스에서 생성하여 전달하는 고유 ID
      */
-    protected BaseEntity() {
-        this.id = UUID.randomUUID();
+    protected BaseEntity(T id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID는 null일 수 없습니다.");
+        }
+        this.id = id;
         long now = System.currentTimeMillis();
         this.createdAt = now;
         this.updatedAt = now;
@@ -75,7 +78,7 @@ public abstract class BaseEntity implements Identifiable<UUID>, Deletable {
      * {@inheritDoc}
      */
     @Override
-    public UUID getId() {
+    public T getId() {
         return id;
     }
 
@@ -108,5 +111,15 @@ public abstract class BaseEntity implements Identifiable<UUID>, Deletable {
 //            throw new RuntimeException(e);
 //        }  수정사항이 바로 반영 되면 이전 반영 시간과 같아져 테스트를 위해 넣었던 코드입니다.
         this.updatedAt = System.currentTimeMillis();
+    }
+
+    @Override
+    public String toString() {
+        return "BaseEntity{" +
+                "id=" + id +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

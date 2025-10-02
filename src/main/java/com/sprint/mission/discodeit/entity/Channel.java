@@ -6,7 +6,7 @@ import java.util.UUID;
  * 채널의 정보를 담는 핵심 도메인 엔티티입니다.
  * 채널의 생성과 상태 변경에 대한 비즈니스 로직을 포함합니다.
  */
-public class Channel extends BaseEntity {
+public class Channel extends BaseEntity<UUID> {
 
     /**
      * 채널의 이름 (사용자에게 표시됨, 고유해야 함)
@@ -29,7 +29,7 @@ public class Channel extends BaseEntity {
      * 외부에서의 직접적인 생성을 막고, static create 메서드를 통하도록 강제합니다.
      */
     protected Channel() {
-        super();
+        super(UUID.randomUUID());
     }
 
     /**

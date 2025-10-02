@@ -1,5 +1,10 @@
 package com.sprint.mission.discodeit.entity;
 
-public class Message extends BaseEntity{
+import java.util.UUID;
 
+public class Message extends BaseEntity<UUID>{
+
+    protected Message() {
+        super(UUID.randomUUID());
+    }
 }

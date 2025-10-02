@@ -7,7 +7,7 @@ import java.util.UUID;
  * 이 클래스는 사용자의 데이터뿐만 아니라, 자신의 상태를 직접 관리하는 비즈니스 로직을 포함합니다.
  * (풍부한 도메인 모델, Rich Domain Model)
  */
-public class User extends BaseEntity {
+public class User extends BaseEntity<UUID> {
 
     // --- Fields ---
     /**
@@ -45,7 +45,7 @@ public class User extends BaseEntity {
      */
     protected User() {
         // BaseEntity의 생성자를 호출하여 공통 필드를 초기화합니다.
-        super();
+        super(UUID.randomUUID());
     }
 
     /**
