@@ -24,10 +24,10 @@ public class JCFDirectMessageService extends JCFBaseService<DirectMessage, UUID,
     public DirectMessage sendMessage(UUID senderId, UUID receiverId, String message) {
         // 1. 비즈니스 규칙 검증: 보내는 사람과 받는 사람이 실제로 존재하는 사용자인지 확인
         if (!userRepository.existsByIdNonDel(senderId)) {
-            throw new NoSuchElementException("메시지를 보내는 사용자를 찾을 수 없습니다: " + senderId);
+            throw new NoSuchElementException("메시지를 보내는 사용자를 찾을 수 없습니다.");
         }
         if (!userRepository.existsByIdNonDel(receiverId)) {
-            throw new NoSuchElementException("메시지를 받는 사용자를 찾을 수 없습니다: " + receiverId);
+            throw new NoSuchElementException("메시지를 받는 사용자를 찾을 수 없습니다.");
         }
 
         // 2. 엔티티 생성 위임
