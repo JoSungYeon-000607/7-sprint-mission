@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.utils.Deletable;
 import com.sprint.mission.discodeit.utils.Identifiable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -128,4 +129,16 @@ public interface BaseRepository<T extends Identifiable<ID> & Deletable, ID> {
      * (Soft Delete된 데이터를 영구적으로 제거합니다)
      */
     void deleteAllByIsDel();
+
+    /**
+     * 외부에서 생성된 데이터 맵을 주입받아 현재 데이터 맵을 교체합니다. (데이터 로딩용)
+     * @param dataMap 로드된 데이터 맵
+     */
+    void loadDataMap(Map<ID, T> dataMap);
+
+    /**
+     * 내부의 데이터 맵을 외부로 노출합니다. (데이터 저장용)
+     * @return 현재 데이터 맵
+     */
+    Map<ID, T> getDataMap();
 }

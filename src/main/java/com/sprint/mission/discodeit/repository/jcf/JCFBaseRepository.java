@@ -147,4 +147,17 @@ public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, 
         // 2. 찾아낸 ID 목록을 순회하며 dataMap에서 해당 엔티티를 제거합니다.
         idsToDelete.forEach(dataMap::remove);
     }
+
+    // JCFBaseRepository 클래스 내부에 아래 두 메서드를 추가합니다.
+
+
+    public void loadDataMap(Map<ID, T> dataMap) {
+        this.dataMap.clear();
+        this.dataMap.putAll(dataMap);
+    }
+
+
+    public Map<ID, T> getDataMap() {
+        return dataMap;
+    }
 }
