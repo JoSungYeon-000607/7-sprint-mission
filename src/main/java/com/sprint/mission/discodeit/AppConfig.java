@@ -17,11 +17,11 @@ import java.util.UUID;
 public class AppConfig {
 
     // --- 파일 경로 상수 정의 ---
-    private static final String USERS_PATH = "users.json";
-    private static final String CHANNELS_PATH = "channels.json";
-    private static final String PARTICIPATIONS_PATH = "participations.json";
-    private static final String CHANNEL_MESSAGES_PATH = "channel_messages.json";
-    private static final String DIRECT_MESSAGES_PATH = "direct_messages.json";
+    private static final String USERS_PATH = "data/users.json";
+    private static final String CHANNELS_PATH = "data/channels.json";
+    private static final String PARTICIPATIONS_PATH = "data/participations.json";
+    private static final String CHANNEL_MESSAGES_PATH = "data/channel_messages.json";
+    private static final String DIRECT_MESSAGES_PATH = "data/direct_messages.json";
 
     // --- 영속성 관리자 ---
     private final JsonPersistenceManager persistenceManager;
