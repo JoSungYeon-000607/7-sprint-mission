@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.utils;
 
 import com.google.gson.reflect.TypeToken;
+import com.sprint.mission.discodeit.auth.service.AuthService;
 import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.repository.jcf.*;
 import com.sprint.mission.discodeit.service.jcf.*;
@@ -24,6 +25,8 @@ public class AppConfig {
     private final JCFParticipationService participationService;
     private final JCFChannelMessageService channelMessageService;
     private final JCFDirectMessageService directMessageService;
+    private final AuthService authService;
+
 
     public AppConfig() {
         // 1. 데이터 영속성 관리자 생성
@@ -45,6 +48,9 @@ public class AppConfig {
         this.participationService = new JCFParticipationService(participationRepository, userRepository, channelRepository);
         this.channelMessageService = new JCFChannelMessageService(channelMessageRepository, participationRepository);
         this.directMessageService = new JCFDirectMessageService(directMessageRepository, userRepository);
+
+        // 5. AuthService 생성 및 의존성 주입 (userService 주입)
+        this.authService = new AuthService(this.userService);
     }
 
     private void loadAllData() {
@@ -73,4 +79,9 @@ public class AppConfig {
     public JCFParticipationService getParticipationService() { return participationService; }
     public JCFChannelMessageService getChannelMessageService() { return channelMessageService; }
     public JCFDirectMessageService getDirectMessageService() { return directMessageService; }
+
+    // AuthService Getter 추가
+    public AuthService getAuthService() {
+        return authService;
+    }
 }
