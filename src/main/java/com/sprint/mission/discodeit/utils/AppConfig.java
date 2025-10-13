@@ -13,8 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AppConfig {
 
-    // AppConfig는 이제 영속성 관리자와 Service만 알고 있습니다.
+    // 모든 설정과 컴포넌트를 소유하고 관리합니다.
+    private final ConfigurationLoader configLoader;
     private final JsonPersistenceManager persistenceManager;
+
     private final JCFUserRepository userRepository;
     private final JCFChannelRepository channelRepository;
     private final JCFParticipationRepository participationRepository;
@@ -29,8 +31,11 @@ public class AppConfig {
 
 
     public AppConfig() {
+        // 설정 로더를 가장 먼저 생성합니다.
+        this.configLoader = new ConfigurationLoader("config.properties");
+
         // 1. 데이터 영속성 관리자 생성
-        this.persistenceManager = new JsonPersistenceManager();
+        this.persistenceManager = new JsonPersistenceManager(configLoader);
 
         // 2. Repository 생성
         this.userRepository = new JCFUserRepository();
@@ -54,7 +59,6 @@ public class AppConfig {
     }
 
     private void loadAllData() {
-        // persistenceManager에게 설정 '키'만 전달하면 모든 처리가 완료됩니다.
         userRepository.loadDataMap(persistenceManager.loadData("data.path.users", new TypeToken<ConcurrentHashMap<UUID, User>>() {}.getType()));
         channelRepository.loadDataMap(persistenceManager.loadData("data.path.channels", new TypeToken<ConcurrentHashMap<UUID, Channel>>() {}.getType()));
         participationRepository.loadDataMap(persistenceManager.loadData("data.path.participations", new TypeToken<ConcurrentHashMap<ParticipationDualKey, Participation>>() {}.getType()));
@@ -80,6 +84,12 @@ public class AppConfig {
     public JCFChannelMessageService getChannelMessageService() { return channelMessageService; }
     public JCFDirectMessageService getDirectMessageService() { return directMessageService; }
 
+    /**
+     * UI 계층에서 설정 파일에 접근할 수 있도록 ConfigurationLoader를 제공합니다.
+     */
+    public ConfigurationLoader getConfigLoader() {
+        return configLoader;
+    }
     // AuthService Getter 추가
     public AuthService getAuthService() {
         return authService;

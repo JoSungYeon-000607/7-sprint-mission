@@ -30,6 +30,7 @@ public class AuthService implements AuthServiceInterFace {
 
             if (user.getPassword().equals("encrypted_" + password)) {
                 AuthUser authUser = AuthUser.from(user);
+                userService.goOnline(user.getId());
                 // 현재 스레드의 저장 공간에 로그인 정보를 저장합니다.
                 currentSession.set(authUser);
                 System.out.println("[" + Thread.currentThread().getName() + "] 로그인 성공! 환영합니다, " + authUser.nickname() + "님.");
@@ -52,6 +53,7 @@ public class AuthService implements AuthServiceInterFace {
         AuthUser user = currentSession.get();
         if (user != null) {
             System.out.println("[" + Thread.currentThread().getName() + "] " + user.nickname() + "님이 로그아웃하셨습니다.");
+            userService.goOffline(user.id());
             // 반드시 remove()를 호출하여 메모리 누수를 방지해야 합니다.
             currentSession.remove();
         }
