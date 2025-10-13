@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.utils.Identifiable;
 import com.sprint.mission.discodeit.repository.BaseRepository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -18,7 +19,7 @@ import java.util.stream.StreamSupport;
 public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, ID> implements BaseRepository<T, ID> {
 
     // 데이터를 메모리에 저장하기 위한 HashMap. ID를 키로 사용하여 O(1) 시간 복잡도로 데이터에 접근합니다.
-    protected final Map<ID, T> dataMap = new HashMap<>();
+    protected final Map<ID, T> dataMap = new ConcurrentHashMap<>();
 
     @Override
     public void save(T entity) {
