@@ -19,7 +19,7 @@ import java.util.stream.StreamSupport;
 public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, ID> implements BaseRepository<T, ID> {
 
     // 데이터를 메모리에 저장하기 위한 HashMap. ID를 키로 사용하여 O(1) 시간 복잡도로 데이터에 접근합니다.
-    protected final Map<ID, T> dataMap = new ConcurrentHashMap<>();
+    protected final Map<ID, T> dataMap = new HashMap<>();
 
     @Override
     public void save(T entity) {

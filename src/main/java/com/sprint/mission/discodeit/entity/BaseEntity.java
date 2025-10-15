@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.entity;
 import com.sprint.mission.discodeit.utils.Deletable;
 import com.sprint.mission.discodeit.utils.Identifiable;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -14,7 +15,7 @@ import java.util.UUID;
  * <p>
  * `abstract` 키워드를 사용해 이 클래스 자체로는 객체를 만들 수 없으며, 반드시 다른 엔티티가 상속받아 사용해야 합니다.
  */
-public abstract class BaseEntity<T> implements Identifiable<T>, Deletable {
+public abstract class BaseEntity<T> implements Identifiable<T>, Deletable, Serializable {
 
     /**
      * 모든 엔티티를 고유하게 식별하는 ID입니다.

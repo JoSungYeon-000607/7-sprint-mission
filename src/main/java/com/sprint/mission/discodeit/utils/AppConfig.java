@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.utils;
 
 import com.google.gson.reflect.TypeToken;
+import com.sprint.mission.discodeit.data.DataPersistenceManager;
 import com.sprint.mission.discodeit.data.JsonPersistenceManager;
 import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.repository.jcf.*;
@@ -12,8 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AppConfig {
 
     // 모든 설정과 컴포넌트를 소유하고 관리합니다.
-    private final ConfigurationLoader configLoader;
-    private final JsonPersistenceManager persistenceManager;
+//    private final ConfigurationLoader configLoader;
+//    private final JsonPersistenceManager persistenceManager;
+    private final DataPersistenceManager dataPersistenceManager;
 
     private final JCFUserRepository userRepository;
     private final JCFChannelRepository channelRepository;
@@ -29,10 +31,12 @@ public class AppConfig {
 
     public AppConfig() {
         // 설정 로더를 가장 먼저 생성합니다.
-        this.configLoader = new ConfigurationLoader("config.properties");
+//        this.configLoader = new ConfigurationLoader("config.properties");
 
         // 1. 데이터 영속성 관리자 생성
-        this.persistenceManager = new JsonPersistenceManager(configLoader);
+//        this.persistenceManager = new JsonPersistenceManager(configLoader);
+        this.dataPersistenceManager = DataPersistenceManager.getInstance();
+
 
         // 2. Repository 생성
         this.userRepository = new JCFUserRepository();
@@ -55,22 +59,22 @@ public class AppConfig {
     }
 
     private void loadAllData() {
-        userRepository.loadDataMap(persistenceManager.loadData("data.path.users", new TypeToken<ConcurrentHashMap<UUID, User>>() {}.getType()));
-        channelRepository.loadDataMap(persistenceManager.loadData("data.path.channels", new TypeToken<ConcurrentHashMap<UUID, Channel>>() {}.getType()));
-        participationRepository.loadDataMap(persistenceManager.loadData("data.path.participations", new TypeToken<ConcurrentHashMap<ParticipationDualKey, Participation>>() {}.getType()));
-        channelMessageRepository.loadDataMap(persistenceManager.loadData("data.path.channel_messages", new TypeToken<ConcurrentHashMap<UUID, ChannelMessage>>() {}.getType()));
-        directMessageRepository.loadDataMap(persistenceManager.loadData("data.path.direct_messages", new TypeToken<ConcurrentHashMap<UUID, DirectMessage>>() {}.getType()));
-        System.out.println("모든 데이터를 파일로부터 로드했습니다. (" + persistenceManager.getDataDirectoryPath() + ")");
+        userRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.USER));
+        channelRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.CHANNEL));
+        participationRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.PARTICIPATION));
+        channelMessageRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.CHANNEL_MESSAGE));
+        directMessageRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.DIRECT_MESSAGE));
+        System.out.println("모든 데이터를 파일로부터 로드했습니다.");
         System.out.println("유저 수 : " + userRepository.getDataMap().size());
     }
 
     public void saveAllData() {
-        persistenceManager.saveData("data.path.users", userRepository.getDataMap());
-        persistenceManager.saveData("data.path.channels", channelRepository.getDataMap());
-        persistenceManager.saveData("data.path.participations", participationRepository.getDataMap());
-        persistenceManager.saveData("data.path.channel_messages", channelMessageRepository.getDataMap());
-        persistenceManager.saveData("data.path.direct_messages", directMessageRepository.getDataMap());
-        System.out.println("모든 데이터를 파일에 저장했습니다. (" + persistenceManager.getDataDirectoryPath() + ")");
+        dataPersistenceManager.saveData(DataKey.USER, userRepository.getDataMap());
+        dataPersistenceManager.saveData(DataKey.CHANNEL, channelRepository.getDataMap());
+        dataPersistenceManager.saveData(DataKey.PARTICIPATION, participationRepository.getDataMap());
+        dataPersistenceManager.saveData(DataKey.CHANNEL_MESSAGE, channelMessageRepository.getDataMap());
+        dataPersistenceManager.saveData(DataKey.DIRECT_MESSAGE, directMessageRepository.getDataMap());
+        System.out.println("모든 데이터를 파일에 저장했습니다.");
     }
 
     // --- Service Getters ---
@@ -82,8 +86,8 @@ public class AppConfig {
 
     /**
      * UI 계층에서 설정 파일에 접근할 수 있도록 ConfigurationLoader를 제공합니다.
-     */
-    public ConfigurationLoader getConfigLoader() {
-        return configLoader;
-    }
+//     */
+//    public ConfigurationLoader getConfigLoader() {
+//        return configLoader;
+//    }
 }

@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'application' // application 플러그인 추가
 }
 
 group = 'com.sprint.mission'
