@@ -1,12 +1,9 @@
 package com.sprint.mission.discodeit.utils;
 
 import com.google.gson.reflect.TypeToken;
-import com.sprint.mission.discodeit.auth.service.AuthService;
 import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.repository.jcf.*;
 import com.sprint.mission.discodeit.service.jcf.*;
-import com.sprint.mission.discodeit.utils.JsonPersistenceManager;
-import com.sprint.mission.discodeit.utils.ParticipationDualKey;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,8 +24,6 @@ public class AppConfig {
     private final JCFParticipationService participationService;
     private final JCFChannelMessageService channelMessageService;
     private final JCFDirectMessageService directMessageService;
-    private final AuthService authService;
-    private final JCFEventService eventService;
 
 
     public AppConfig() {
@@ -44,20 +39,16 @@ public class AppConfig {
         this.participationRepository = new JCFParticipationRepository();
         this.channelMessageRepository = new JCFChannelMessageRepository();
         this.directMessageRepository = new JCFDirectMessageRepository();
-        this.eventService = new JCFEventService();
 
         // 3. 데이터 로드
         loadAllData();
 
         // 4. Service 생성 및 의존성 주입
-        this.userService = new JCFUserService(userRepository, eventService);
+        this.userService = new JCFUserService(userRepository);
         this.channelService = new JCFChannelService(channelRepository);
         this.participationService = new JCFParticipationService(participationRepository, userRepository, channelRepository);
-        this.channelMessageService = new JCFChannelMessageService(channelMessageRepository, participationRepository,eventService);
+        this.channelMessageService = new JCFChannelMessageService(channelMessageRepository, participationRepository);
         this.directMessageService = new JCFDirectMessageService(directMessageRepository, userRepository);
-
-        // 5. AuthService 생성 및 의존성 주입 (userService 주입)
-        this.authService = new AuthService(this.userService);
 
 
     }
@@ -94,9 +85,4 @@ public class AppConfig {
     public ConfigurationLoader getConfigLoader() {
         return configLoader;
     }
-    // AuthService Getter 추가
-    public AuthService getAuthService() {
-        return authService;
-    }
-    public JCFEventService getEventService() { return eventService; }
 }
