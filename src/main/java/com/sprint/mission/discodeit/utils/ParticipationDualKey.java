@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.utils;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 
@@ -13,5 +14,5 @@ import java.util.UUID;
  * @param channelId 참여 관계가 속한 채널의 고유 ID. {@link com.sprint.mission.discodeit.entity.Channel}의 ID를 참조합니다.
  * @param userId    참여 관계의 주체인 사용자의 고유 ID. {@link com.sprint.mission.discodeit.entity.User}의 ID를 참조합니다.
  */
-public record ParticipationDualKey(UUID channelId, UUID userId) {
+public record ParticipationDualKey(UUID channelId, UUID userId) implements Serializable {
 }
