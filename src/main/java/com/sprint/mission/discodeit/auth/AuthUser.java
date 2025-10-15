@@ -11,7 +11,7 @@ import java.util.UUID;
  * @param username 사용자의 로그인 ID
  * @param nickname 화면에 표시될 사용자의 닉네임
  */
-public record AuthUser(UUID id, String username, String nickname) {
+public record AuthUser(UUID id, String username, String nickname){
 
     /**
      * User 엔티티에서 AuthUser 객체를 안전하게 생성하는 정적 팩토리 메서드입니다.

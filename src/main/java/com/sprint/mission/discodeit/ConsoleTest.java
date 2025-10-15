@@ -16,7 +16,6 @@ import com.sprint.mission.discodeit.utils.DateUtils;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ConsoleTest {
