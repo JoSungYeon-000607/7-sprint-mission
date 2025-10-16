@@ -1,15 +1,19 @@
 package com.sprint.mission.discodeit.service.jcf;
 
+import com.sprint.mission.discodeit.entity.Participation;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelMessageRepository;
 import com.sprint.mission.discodeit.repository.DirectMessageRepository;
 import com.sprint.mission.discodeit.repository.ParticipationRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.utils.ParticipationDualKey;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * UserService 인터페이스의 메모리(JCF) 기반 구현체입니다.
@@ -59,6 +63,23 @@ public class JCFUserService extends JCFBaseService<User, UUID, UserRepository> i
             userRepository.save(newUser);
             return newUser;
         }
+    }
+
+    @Override
+    public void deleteById(UUID userId) {
+        List<ParticipationDualKey> participationIds = participationRepository.findAllByUserId(userId).stream()
+                .map(Participation::getId)
+                .toList();
+
+        if(!participationIds.isEmpty()){
+            channelMessageRepository.deleteAllBySenderId(userId);
+
+            directMessageRepository.deleteAllBySenderId(userId);
+
+            participationRepository.deleteAllById(participationIds);
+        }
+
+        super.deleteById(userId);
     }
 
     @Override

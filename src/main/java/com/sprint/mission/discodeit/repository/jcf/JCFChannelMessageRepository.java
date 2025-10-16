@@ -11,10 +11,26 @@ import java.util.stream.Collectors;
 public class JCFChannelMessageRepository extends JCFBaseRepository<ChannelMessage, UUID> implements ChannelMessageRepository {
 
     @Override
-    public List<ChannelMessage> findByChannelId(UUID channelId) {
+    public List<ChannelMessage> findAllByChannelId(UUID channelId) {
         return dataMap.values().stream()
                 .filter(cm -> !cm.isDeleted() && cm.getChannelId().equals(channelId))
                 .sorted(Comparator.comparing(ChannelMessage::getCreatedAt)) // 생성 시간(오름차순)으로 정렬
-                .collect(Collectors.toList());
+                .toList();
     }
+
+    @Override
+    public List<ChannelMessage> findAllBySenderId(UUID senderId) {
+        return dataMap.values().stream()
+                .filter(cm -> !cm.isDeleted() && cm.getSenderId().equals(senderId))
+                .sorted(Comparator.comparing(ChannelMessage::getCreatedAt))
+                .toList();
+    }
+
+    @Override
+    public void deleteAllBySenderId(UUID senderId) {
+        findAllBySenderId(senderId).stream()
+                .map(ChannelMessage::getId).forEach(this::deleteById);
+    }
+
+
 }

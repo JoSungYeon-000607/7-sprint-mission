@@ -38,6 +38,6 @@ public class JCFChannelMessageService extends JCFBaseService<ChannelMessage, UUI
 
     @Override
     public List<ChannelMessage> getMessagesByChannel(UUID channelId) {
-        return channelMessageRepository.findByChannelId(channelId);
+        return channelMessageRepository.findAllByChannelId(channelId);
     }
 }

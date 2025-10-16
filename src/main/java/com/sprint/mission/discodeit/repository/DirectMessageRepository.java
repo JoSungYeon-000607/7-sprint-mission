@@ -28,4 +28,10 @@ public interface DirectMessageRepository extends BaseRepository<DirectMessage, U
      * @return 두 사용자 간의 모든 메시지 목록
      */
     List<DirectMessage> findByParticipants(UUID userOneId, UUID userTwoId);
+
+    /**
+     * 사용자가 보낸 모든 메시지를 삭제합니다.
+     * @param senderId 첫 번째 사용자 ID
+     */
+    void deleteAllBySenderId(UUID senderId);
 }

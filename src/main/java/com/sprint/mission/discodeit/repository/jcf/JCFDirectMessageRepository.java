@@ -36,4 +36,10 @@ public class JCFDirectMessageRepository extends JCFBaseRepository<DirectMessage,
                 .sorted(Comparator.comparing(DirectMessage::getCreatedAt)) // 생성 시간 순으로 정렬
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteAllBySenderId(UUID senderId) {
+        findBySenderId(senderId).stream()
+                .map(DirectMessage::getId).forEach(this::deleteById);
+    }
 }
