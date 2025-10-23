@@ -43,7 +43,7 @@ public class User extends BaseEntity<UUID> {
      * 외부에서 `new User()`를 통해 불완전한 객체를 생성하는 것을 막기 위해 생성자를 protected로 선언합니다.
      * 객체 생성은 반드시 `create()` 정적 팩토리 메서드를 통해서만 이루어져야 합니다.
      */
-    protected User() {
+    private User() {
         // BaseEntity의 생성자를 호출하여 공통 필드를 초기화합니다.
         super(UUID.randomUUID());
     }

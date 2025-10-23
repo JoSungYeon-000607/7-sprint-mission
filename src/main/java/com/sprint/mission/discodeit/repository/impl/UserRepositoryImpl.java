@@ -1,14 +1,13 @@
-package com.sprint.mission.discodeit.repository.jcf;
+package com.sprint.mission.discodeit.repository.impl;
 
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-/**
- * 메모리(Java Collections Framework) 기반으로 UserRepository 인터페이스를 구현한 클래스입니다.
- */
-public class JCFUserRepository extends JCFBaseRepository<User, UUID> implements UserRepository {
+@Repository
+public class UserRepositoryImpl extends BaseRepositoryImpl<User, UUID> implements UserRepository {
 
     /**
      * {@inheritDoc}

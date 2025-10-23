@@ -4,23 +4,23 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelMessage;
 import com.sprint.mission.discodeit.entity.Participation;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.service.jcf.JCFChannelMessageService;
-import com.sprint.mission.discodeit.service.jcf.JCFUserService;
-import com.sprint.mission.discodeit.utils.AppConfig;
+import com.sprint.mission.discodeit.service.jcf.ChannelMessageServiceImpl;
+import com.sprint.mission.discodeit.service.jcf.UserServiceImpl;
+import com.sprint.mission.discodeit.utils.AppConfigRegacy;
 import com.sprint.mission.discodeit.utils.DateUtils;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class ChannelMessageView {
-    private final JCFChannelMessageService channelMessageService;
-    private final JCFUserService userService;
+    private final ChannelMessageServiceImpl channelMessageService;
+    private final UserServiceImpl userService;
     private final Scanner sc;
     private final SharedView sharedView;
 
-    public ChannelMessageView(AppConfig appConfig, Scanner scanner, SharedView sharedView) {
-        this.channelMessageService = appConfig.getChannelMessageService();
-        this.userService = appConfig.getUserService();
+    public ChannelMessageView(AppConfigRegacy appConfigRegacy, Scanner scanner, SharedView sharedView) {
+        this.channelMessageService = appConfigRegacy.getChannelMessageService();
+        this.userService = appConfigRegacy.getUserService();
         this.sc = scanner;
         this.sharedView = sharedView;
     }

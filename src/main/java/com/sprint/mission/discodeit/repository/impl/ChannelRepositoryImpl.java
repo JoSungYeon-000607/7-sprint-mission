@@ -1,8 +1,9 @@
-package com.sprint.mission.discodeit.repository.jcf;
+package com.sprint.mission.discodeit.repository.impl;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,10 +11,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * 메모리(JCF) 기반으로 ChannelRepository 인터페이스를 구현한 클래스입니다.
- */
-public class JCFChannelRepository extends JCFBaseRepository<Channel, UUID> implements ChannelRepository {
+@Repository
+public class ChannelRepositoryImpl extends BaseRepositoryImpl<Channel, UUID> implements ChannelRepository {
 
     /**
      * {@inheritDoc}

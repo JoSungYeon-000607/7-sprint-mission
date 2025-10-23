@@ -1,11 +1,10 @@
 package com.sprint.mission.discodeit;
 
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.jcf.JCFChannelMessageRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFDirectMessageRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFParticipationRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
-import com.sprint.mission.discodeit.service.jcf.JCFUserService;
+import com.sprint.mission.discodeit.repository.impl.*;
+import com.sprint.mission.discodeit.repository.impl.DirectMessageRepositoryImpl;
+import com.sprint.mission.discodeit.repository.impl.UserRepositoryImpl;
+import com.sprint.mission.discodeit.service.jcf.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,16 +18,16 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * User Service에서 발생할 수 있는 더 복합적인 시나리오와 엣지 케이스를 테스트합니다.
  */
-@DisplayName("JCFUserService 복합 시나리오 테스트")
+@DisplayName("UserServiceImpl 복합 시나리오 테스트")
 class JCFUserServiceComplexScenariosTest {
 
-    private JCFUserService userService;
-    private JCFUserRepository userRepository;
+    private UserServiceImpl userService;
+    private UserRepositoryImpl userRepository;
 
     @BeforeEach
     void setUp() {
-        userRepository = new JCFUserRepository();
-        userService = new JCFUserService(userRepository,  new JCFParticipationRepository(), new JCFChannelMessageRepository(), new JCFDirectMessageRepository());
+        userRepository = new UserRepositoryImpl();
+        userService = new UserServiceImpl(userRepository,  new ParticipationRepositoryImpl(), new ChannelMessageRepositoryImpl(), new DirectMessageRepositoryImpl());
     }
 
     @Nested

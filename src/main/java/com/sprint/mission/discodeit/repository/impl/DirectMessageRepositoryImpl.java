@@ -1,14 +1,16 @@
-package com.sprint.mission.discodeit.repository.jcf;
+package com.sprint.mission.discodeit.repository.impl;
 
 import com.sprint.mission.discodeit.entity.DirectMessage;
 import com.sprint.mission.discodeit.repository.DirectMessageRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class JCFDirectMessageRepository extends JCFBaseRepository<DirectMessage, UUID> implements DirectMessageRepository {
+@Repository
+public class DirectMessageRepositoryImpl extends BaseRepositoryImpl<DirectMessage, UUID> implements DirectMessageRepository {
 
     @Override
     public List<DirectMessage> findByReceiverId(UUID receiverId) {

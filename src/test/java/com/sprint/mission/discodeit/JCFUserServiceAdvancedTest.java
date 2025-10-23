@@ -1,11 +1,10 @@
 package com.sprint.mission.discodeit;
 
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.jcf.JCFChannelMessageRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFDirectMessageRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFParticipationRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
-import com.sprint.mission.discodeit.service.jcf.JCFUserService;
+import com.sprint.mission.discodeit.repository.impl.*;
+import com.sprint.mission.discodeit.repository.impl.ChannelMessageRepositoryImpl;
+import com.sprint.mission.discodeit.repository.impl.ParticipationRepositoryImpl;
+import com.sprint.mission.discodeit.service.jcf.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,16 +15,16 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 
-@DisplayName("JCFUserService 심층 기능 테스트")
+@DisplayName("UserServiceImpl 심층 기능 테스트")
 class JCFUserServiceAdvancedTest {
 
-    private JCFUserService userService;
-    private JCFUserRepository userRepository;
+    private UserServiceImpl userService;
+    private UserRepositoryImpl userRepository;
 
     @BeforeEach
     void setUp() {
-        userRepository = new JCFUserRepository();
-        userService = new JCFUserService(userRepository, new JCFParticipationRepository(), new JCFChannelMessageRepository(), new JCFDirectMessageRepository());
+        userRepository = new UserRepositoryImpl();
+        userService = new UserServiceImpl(userRepository, new ParticipationRepositoryImpl(), new ChannelMessageRepositoryImpl(), new DirectMessageRepositoryImpl());
     }
 
     @Nested

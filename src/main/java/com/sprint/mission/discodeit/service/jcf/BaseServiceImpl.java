@@ -18,12 +18,12 @@ import java.util.stream.StreamSupport;
  * @param <ID> 엔티티의 ID 타입
  * @param <R>  해당 엔티티를 다루는 {@link BaseRepository}의 하위 타입
  */
-public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID, R extends BaseRepository<T, ID>>
+public abstract class BaseServiceImpl<T extends Identifiable<ID> & Deletable, ID, R extends BaseRepository<T, ID>>
         implements BaseService<T, ID> {
 
     protected final R repository;
 
-    protected JCFBaseService(R repository) {
+    protected BaseServiceImpl(R repository) {
         this.repository = repository;
     }
 
@@ -96,9 +96,7 @@ public abstract class JCFBaseService<T extends Identifiable<ID> & Deletable, ID,
 
     @Override
     public void deleteById(ID id) {
-        // 서비스 계층의 비즈니스 규칙: "존재하지 않는 데이터는 삭제할 수 없다."
-        // 이 규칙을 검증한 후, Repository에 삭제 명령을 내립니다.
-        if (!repository.existsById(id)) {
+        if (!existsById(id)) {
             throw new NoSuchElementException("삭제할 데이터가 존재하지 않습니다.");
         }
         repository.deleteById(id);

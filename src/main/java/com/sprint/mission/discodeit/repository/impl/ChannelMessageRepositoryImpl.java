@@ -1,26 +1,33 @@
-package com.sprint.mission.discodeit.repository.jcf;
+package com.sprint.mission.discodeit.repository.impl;
 
 import com.sprint.mission.discodeit.entity.ChannelMessage;
 import com.sprint.mission.discodeit.repository.ChannelMessageRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-public class JCFChannelMessageRepository extends JCFBaseRepository<ChannelMessage, UUID> implements ChannelMessageRepository {
+@Repository
+public class ChannelMessageRepositoryImpl extends BaseRepositoryImpl<ChannelMessage, UUID> implements ChannelMessageRepository {
 
     @Override
     public List<ChannelMessage> findAllByChannelId(UUID channelId) {
+        if (dataMap.isEmpty()) {
+            return List.of();
+        }
         return dataMap.values().stream()
-                .filter(cm -> !cm.isDeleted() && cm.getChannelId().equals(channelId))
+                .filter(cm -> !cm.isDeleted() && channelId.equals(cm.getChannelId()))
                 .sorted(Comparator.comparing(ChannelMessage::getCreatedAt)) // 생성 시간(오름차순)으로 정렬
                 .toList();
     }
 
     @Override
     public List<ChannelMessage> findAllBySenderId(UUID senderId) {
-        return dataMap.values().stream()
+        if(dataMap.isEmpty()){
+            return List.of();
+        }
+        return  dataMap.values().stream()
                 .filter(cm -> !cm.isDeleted() && cm.getSenderId().equals(senderId))
                 .sorted(Comparator.comparing(ChannelMessage::getCreatedAt))
                 .toList();
@@ -28,9 +35,10 @@ public class JCFChannelMessageRepository extends JCFBaseRepository<ChannelMessag
 
     @Override
     public void deleteAllBySenderId(UUID senderId) {
+        if(findAllBySenderId(senderId).isEmpty()){
+            return;
+        }
         findAllBySenderId(senderId).stream()
                 .map(ChannelMessage::getId).forEach(this::deleteById);
     }
-
-
 }

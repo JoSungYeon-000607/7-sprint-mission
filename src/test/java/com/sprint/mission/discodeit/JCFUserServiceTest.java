@@ -1,11 +1,11 @@
 package com.sprint.mission.discodeit;
 
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.jcf.JCFChannelMessageRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFDirectMessageRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFParticipationRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
-import com.sprint.mission.discodeit.service.jcf.JCFUserService;
+import com.sprint.mission.discodeit.repository.impl.ChannelMessageRepositoryImpl;
+import com.sprint.mission.discodeit.repository.impl.DirectMessageRepositoryImpl;
+import com.sprint.mission.discodeit.repository.impl.ParticipationRepositoryImpl;
+import com.sprint.mission.discodeit.repository.impl.UserRepositoryImpl;
+import com.sprint.mission.discodeit.service.jcf.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,14 +18,14 @@ import static org.assertj.core.api.Assertions.*;
 
 class JCFUserServiceTest {
 
-    private JCFUserService userService;
-    private JCFUserRepository userRepository;
+    private UserServiceImpl userService;
+    private UserRepositoryImpl userRepository;
 
     @BeforeEach
     void setUp() {
         // 각 테스트는 독립적으로 실행되어야 하므로, 매번 새로운 Repository와 Service 객체를 생성합니다.
-        userRepository = new JCFUserRepository();
-        userService = new JCFUserService(userRepository,  new JCFParticipationRepository(), new JCFChannelMessageRepository(), new JCFDirectMessageRepository());
+        userRepository = new UserRepositoryImpl();
+        userService = new UserServiceImpl(userRepository,  new ParticipationRepositoryImpl(), new ChannelMessageRepositoryImpl(), new DirectMessageRepositoryImpl());
     }
 
     @Test

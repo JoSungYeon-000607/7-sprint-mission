@@ -28,7 +28,7 @@ public class Channel extends BaseEntity<UUID> {
     /**
      * 외부에서의 직접적인 생성을 막고, static create 메서드를 통하도록 강제합니다.
      */
-    protected Channel() {
+    private Channel() {
         super(UUID.randomUUID());
     }
 

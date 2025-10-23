@@ -11,7 +11,7 @@ public class ChannelMessage extends BaseEntity<UUID> {
     /**
      * 외부에서의 직접적인 생성을 막고, static create 메서드를 통하도록 강제합니다.
      */
-    protected ChannelMessage() {
+    private ChannelMessage() {
         super(UUID.randomUUID());
     }
 

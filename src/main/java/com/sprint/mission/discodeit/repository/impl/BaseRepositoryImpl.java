@@ -1,8 +1,9 @@
-package com.sprint.mission.discodeit.repository.jcf;
+package com.sprint.mission.discodeit.repository.impl;
 
 import com.sprint.mission.discodeit.utils.Deletable;
 import com.sprint.mission.discodeit.utils.Identifiable;
 import com.sprint.mission.discodeit.repository.BaseRepository;
+import lombok.Getter;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,10 +17,10 @@ import java.util.stream.StreamSupport;
  * @param <T>  Identifiable 및 Deletable 인터페이스를 구현한 엔티티 타입
  * @param <ID> 해당 엔티티의 ID 타입
  */
-public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, ID> implements BaseRepository<T, ID> {
+@Getter
+public abstract class BaseRepositoryImpl<T extends Identifiable<ID> & Deletable, ID> implements BaseRepository<T, ID> {
 
-    // 데이터를 메모리에 저장하기 위한 HashMap. ID를 키로 사용하여 O(1) 시간 복잡도로 데이터에 접근합니다.
-    protected final Map<ID, T> dataMap = new HashMap<>();
+    protected final Map<ID, T> dataMap = new ConcurrentHashMap<>();
 
     @Override
     public void save(T entity) {
@@ -149,16 +150,9 @@ public abstract class JCFBaseRepository<T extends Identifiable<ID> & Deletable, 
         idsToDelete.forEach(dataMap::remove);
     }
 
-    // JCFBaseRepository 클래스 내부에 아래 두 메서드를 추가합니다.
-
-
+    // BaseRepositoryImpl 클래스 내부에 아래 두 메서드를 추가합니다.
     public void loadDataMap(Map<ID, T> dataMap) {
         this.dataMap.clear();
         this.dataMap.putAll(dataMap);
-    }
-
-
-    public Map<ID, T> getDataMap() {
-        return dataMap;
     }
 }

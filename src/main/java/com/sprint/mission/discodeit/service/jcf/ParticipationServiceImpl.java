@@ -6,26 +6,24 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ParticipationRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ParticipationService;
-import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.utils.ParticipationDualKey;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
-public class JCFParticipationService extends JCFBaseService<Participation, ParticipationDualKey, ParticipationRepository> implements ParticipationService {
+
+@Service
+public class ParticipationServiceImpl extends BaseServiceImpl<Participation, ParticipationDualKey, ParticipationRepository> implements ParticipationService {
 
     // Service 대신 Repository를 직접 참조하여 순환 참조를 방지합니다.
-    private final ParticipationRepository participationRepository;
     private final UserRepository userRepository;
     private final ChannelRepository channelRepository;
 
-    public JCFParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChannelRepository channelRepository) {
+    public ParticipationServiceImpl(ParticipationRepository participationRepository, UserRepository userRepository, ChannelRepository channelRepository) {
         super(participationRepository);
-        this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.channelRepository = channelRepository;
     }
@@ -37,36 +35,28 @@ public class JCFParticipationService extends JCFBaseService<Participation, Parti
 
         ParticipationDualKey participationId = new ParticipationDualKey(channelId, userId);
 
-        // 2. Repository의 findById를 직접 호출하여 Optional<Participation>을 받습니다.
-        Optional<Participation> existingParticipation = participationRepository.findById(participationId);
-
-        // 3. Optional 객체를 사용하여 분기 처리를 합니다.
-        if (existingParticipation.isPresent()) {
-            // 3a. 기존 참여 정보가 있는 경우 (재참여 또는 이미 참여 중)
-            Participation p = existingParticipation.get();
+        if(existsById(participationId)){
+            Participation p = findByIdNonDel(participationId);
             if (p.isDeleted()) {
                 // 논리적으로 삭제된 상태이면, 복원하고 정보를 업데이트합니다.
                 p.restore(); // isDeleted를 false로 변경
                 p.changeNickname(nickname); // 닉네임 변경
-                participationRepository.save(p);
+                save(p);
                 return p;
-            } else {
-                // 이미 활성 상태이면, 예외를 발생시킵니다.
-                throw new IllegalStateException("이미 채널에 참가 되어있습니다.");
             }
-        } else {
-            // 3b. 기존 참여 정보가 전혀 없는 경우 (최초 참여)
-            Participation newParticipation;
-            // 새로운 참여 정보를 생성하고 저장합니다.
-            if(userRepository.findById(userId).get().getUsername().equals("admin")){
-                newParticipation = Participation.create(channelId, userId, nickname, Role.ADMIN);
-            }else{
-                newParticipation = Participation.create(channelId, userId, nickname, Role.USER);
-            }
-
-            participationRepository.save(newParticipation);
-            return newParticipation;
+            // 이미 활성 상태이면, 예외를 발생시킵니다.
+            throw new IllegalStateException("이미 채널에 참가 되어있습니다.");
         }
+        // 3b. 기존 참여 정보가 전혀 없는 경우 (최초 참여)
+        Participation newParticipation;
+        // 새로운 참여 정보를 생성하고 저장합니다.
+        if(userRepository.findById(userId).orElseThrow(()-> new NoSuchElementException("사용자를 찾을 수 없습니다.")).getUsername().equals("admin")){
+            newParticipation = Participation.create(channelId, userId, nickname, Role.ADMIN);
+        }else{
+            newParticipation = Participation.create(channelId, userId, nickname, Role.USER);
+        }
+        save(newParticipation);
+        return newParticipation;
     }
 
     @Override
@@ -82,7 +72,7 @@ public class JCFParticipationService extends JCFBaseService<Participation, Parti
         softDeleteById(participation.getId());
 
         // 삭제 후, 채널에 활성 참여자가 남아있는지 확인하여 결과를 반환합니다.
-        return participationRepository.findAllByChannelId(channelId).isEmpty();
+        return repository.findAllByChannelId(channelId).isEmpty();
     }
 
     @Override
@@ -103,12 +93,12 @@ public class JCFParticipationService extends JCFBaseService<Participation, Parti
 
     @Override
     public List<Participation> findParticipationsByChannelId(UUID channelId) {
-        return participationRepository.findAllByChannelId(channelId);
+        return repository.findAllByChannelId(channelId);
     }
 
     @Override
     public List<Participation> findParticipationsByUserId(UUID userId) {
-        return participationRepository.findAllByUserId(userId);
+        return repository.findAllByUserId(userId);
     }
 
     @Override
@@ -127,26 +117,26 @@ public class JCFParticipationService extends JCFBaseService<Participation, Parti
 
         // 5. 모든 검증을 통과하면 역할을 변경하고 저장합니다.
         targetParticipation.changeRole(newRole);
-        participationRepository.save(targetParticipation);
+        save(targetParticipation);
     }
 
     @Override
     public void changeNickname(UUID channelId, UUID userId, String newNickname) {
         Participation participation = findParticipation(channelId, userId);
         participation.changeNickname(newNickname);
-        participationRepository.save(participation);
+        save(participation);
     }
 
     @Override
     public boolean isUserInChannel(UUID channelId, UUID userId) {
         ParticipationDualKey id = new ParticipationDualKey(channelId, userId);
         // existsByIdNonDel을 통해 삭제되지 않은 참여 정보가 있는지 확인합니다.
-        return participationRepository.existsByIdNonDel(id);
+        return repository.existsByIdNonDel(id);
     }
 
     @Override
     public User findOwner(UUID channelId) {
-        return participationRepository.findAllByChannelId(channelId).stream()
+        return repository.findAllByChannelId(channelId).stream()
                 .filter(p -> p.getRole() == Role.ADMIN) // ADMIN을 소유주로 가정
                 .findFirst()
                 .flatMap(p -> userRepository.findByIdNonDel(p.getUserId()))
@@ -196,7 +186,7 @@ public class JCFParticipationService extends JCFBaseService<Participation, Parti
             return false;
         }
         // 채널의 모든 관리자 수를 셉니다.
-        long adminCount = participationRepository.findAllByChannelId(channelId).stream()
+        long adminCount = repository.findAllByChannelId(channelId).stream()
                 .filter(p -> p.getRole() == Role.ADMIN)
                 .count();
         // 관리자 수가 1명이면, 현재 사용자가 마지막 관리자입니다.

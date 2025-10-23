@@ -4,10 +4,10 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Participation;
 import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.jcf.JCFChannelRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFParticipationRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
-import com.sprint.mission.discodeit.service.jcf.JCFParticipationService;
+import com.sprint.mission.discodeit.repository.impl.ChannelRepositoryImpl;
+import com.sprint.mission.discodeit.repository.impl.ParticipationRepositoryImpl;
+import com.sprint.mission.discodeit.repository.impl.UserRepositoryImpl;
+import com.sprint.mission.discodeit.service.jcf.ParticipationServiceImpl;
 import com.sprint.mission.discodeit.utils.ParticipationDualKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,13 +21,13 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 
-@DisplayName("JCFParticipationService 통합 테스트")
+@DisplayName("ParticipationServiceImpl 통합 테스트")
 class JCFParticipationServiceTest {
 
-    private JCFParticipationService participationService;
-    private JCFUserRepository userRepository;
-    private JCFChannelRepository channelRepository;
-    private JCFParticipationRepository participationRepository;
+    private ParticipationServiceImpl participationService;
+    private UserRepositoryImpl userRepository;
+    private ChannelRepositoryImpl channelRepository;
+    private ParticipationRepositoryImpl participationRepository;
 
     // 테스트에 사용할 기본 사용자 및 채널
     private User adminUser, normalUser, anotherUser;
@@ -36,11 +36,11 @@ class JCFParticipationServiceTest {
     @BeforeEach
     void setUp() {
         // 매 테스트마다 깨끗한 상태에서 시작하도록 저장소와 서비스를 새로 생성
-        userRepository = new JCFUserRepository();
-        channelRepository = new JCFChannelRepository();
-        participationRepository = new JCFParticipationRepository();
+        userRepository = new UserRepositoryImpl();
+        channelRepository = new ChannelRepositoryImpl();
+        participationRepository = new ParticipationRepositoryImpl();
 
-        participationService = new JCFParticipationService(participationRepository, userRepository, channelRepository);
+        participationService = new ParticipationServiceImpl(participationRepository, userRepository, channelRepository);
 
         // 테스트에 공통적으로 사용할 사용자 및 채널 데이터 생성
         adminUser = User.create("admin", "pw", "admin@a.com", "관리자", null);

@@ -2,23 +2,23 @@ package com.sprint.mission.discodeit.view;
 
 import com.sprint.mission.discodeit.entity.DirectMessage;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.service.jcf.JCFDirectMessageService;
-import com.sprint.mission.discodeit.service.jcf.JCFUserService;
-import com.sprint.mission.discodeit.utils.AppConfig;
+import com.sprint.mission.discodeit.service.jcf.DirectMessageServiceImpl;
+import com.sprint.mission.discodeit.service.jcf.UserServiceImpl;
+import com.sprint.mission.discodeit.utils.AppConfigRegacy;
 import com.sprint.mission.discodeit.utils.DateUtils;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class DirectMessageView {
-    private final JCFDirectMessageService directMessageService;
-    private final JCFUserService userService;
+    private final DirectMessageServiceImpl directMessageService;
+    private final UserServiceImpl userService;
     private final Scanner sc;
     private final SharedView sharedView;
 
-    public DirectMessageView(AppConfig appConfig, Scanner scanner, SharedView sharedView) {
-        this.directMessageService = appConfig.getDirectMessageService();
-        this.userService = appConfig.getUserService();
+    public DirectMessageView(AppConfigRegacy appConfigRegacy, Scanner scanner, SharedView sharedView) {
+        this.directMessageService = appConfigRegacy.getDirectMessageService();
+        this.userService = appConfigRegacy.getUserService();
         this.sc = scanner;
         this.sharedView = sharedView;
     }

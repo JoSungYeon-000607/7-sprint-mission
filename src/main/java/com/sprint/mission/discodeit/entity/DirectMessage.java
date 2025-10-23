@@ -11,7 +11,7 @@ public class DirectMessage extends BaseEntity<UUID> {
     /**
      * 외부에서의 직접적인 생성을 막고, static create 메서드를 통하도록 강제합니다.
      */
-    protected DirectMessage() {
+    private DirectMessage() {
         super(UUID.randomUUID());
     }
 
