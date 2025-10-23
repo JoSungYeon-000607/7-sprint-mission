@@ -4,7 +4,7 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.impl.*;
 import com.sprint.mission.discodeit.repository.impl.DirectMessageRepositoryImpl;
 import com.sprint.mission.discodeit.repository.impl.UserRepositoryImpl;
-import com.sprint.mission.discodeit.service.jcf.UserServiceImpl;
+import com.sprint.mission.discodeit.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

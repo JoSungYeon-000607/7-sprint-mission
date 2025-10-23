@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.service.jcf;
+package com.sprint.mission.discodeit.service.impl;
 
 import com.sprint.mission.discodeit.utils.Deletable;
 import com.sprint.mission.discodeit.utils.Identifiable;

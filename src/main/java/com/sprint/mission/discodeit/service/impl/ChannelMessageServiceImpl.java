@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.service.jcf;
+package com.sprint.mission.discodeit.service.impl;
 
 import com.sprint.mission.discodeit.entity.ChannelMessage;
 import com.sprint.mission.discodeit.repository.ChannelMessageRepository;

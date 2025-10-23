@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit.utils;
 import com.sprint.mission.discodeit.data.DataKey;
 import com.sprint.mission.discodeit.data.DataPersistenceManager;
 import com.sprint.mission.discodeit.repository.impl.*;
-import com.sprint.mission.discodeit.service.jcf.*;
+import com.sprint.mission.discodeit.service.impl.*;
 
 public class AppConfigRegacy {
 

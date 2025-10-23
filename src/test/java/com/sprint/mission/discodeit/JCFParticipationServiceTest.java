@@ -7,7 +7,7 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.impl.ChannelRepositoryImpl;
 import com.sprint.mission.discodeit.repository.impl.ParticipationRepositoryImpl;
 import com.sprint.mission.discodeit.repository.impl.UserRepositoryImpl;
-import com.sprint.mission.discodeit.service.jcf.ParticipationServiceImpl;
+import com.sprint.mission.discodeit.service.impl.ParticipationServiceImpl;
 import com.sprint.mission.discodeit.utils.ParticipationDualKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
