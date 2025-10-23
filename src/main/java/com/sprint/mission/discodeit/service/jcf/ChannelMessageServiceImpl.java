@@ -5,18 +5,18 @@ import com.sprint.mission.discodeit.repository.ChannelMessageRepository;
 import com.sprint.mission.discodeit.repository.ParticipationRepository;
 import com.sprint.mission.discodeit.service.ChannelMessageService;
 import com.sprint.mission.discodeit.utils.ParticipationDualKey;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-public class JCFChannelMessageService extends JCFBaseService<ChannelMessage, UUID, ChannelMessageRepository> implements ChannelMessageService {
+@Service
+public class ChannelMessageServiceImpl extends BaseServiceImpl<ChannelMessage, UUID, ChannelMessageRepository> implements ChannelMessageService {
 
-    private final ChannelMessageRepository channelMessageRepository;
     private final ParticipationRepository participationRepository; // 사용자 참여 여부 확인을 위해 추가
 
-    public JCFChannelMessageService(ChannelMessageRepository channelMessageRepository, ParticipationRepository participationRepository) {
+    public ChannelMessageServiceImpl(ChannelMessageRepository channelMessageRepository, ParticipationRepository participationRepository) {
         super(channelMessageRepository);
-        this.channelMessageRepository = channelMessageRepository;
         this.participationRepository = participationRepository;
     }
 
@@ -32,12 +32,12 @@ public class JCFChannelMessageService extends JCFBaseService<ChannelMessage, UUI
         ChannelMessage newChannelMessage = ChannelMessage.create(channelId, senderId, message);
 
         // 3. 데이터 저장
-        channelMessageRepository.save(newChannelMessage);
+        save(newChannelMessage);
         return newChannelMessage;
     }
 
     @Override
     public List<ChannelMessage> getMessagesByChannel(UUID channelId) {
-        return channelMessageRepository.findAllByChannelId(channelId);
+        return repository.findAllByChannelId(channelId);
     }
 }

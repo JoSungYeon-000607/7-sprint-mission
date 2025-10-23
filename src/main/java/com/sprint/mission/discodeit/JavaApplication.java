@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit;
 
-import com.sprint.mission.discodeit.utils.AppConfig;
+import com.sprint.mission.discodeit.utils.AppConfigRegacy;
 import com.sprint.mission.discodeit.view.*;
 
 import java.util.InputMismatchException;
@@ -9,18 +9,18 @@ import java.util.Scanner;
 public class JavaApplication {
 
     public static void main(String[] args) {
-        AppConfig appConfig = new AppConfig();
+        AppConfigRegacy appConfigRegacy = new AppConfigRegacy();
         Scanner sc = new Scanner(System.in);
-        Runtime.getRuntime().addShutdownHook(new Thread(appConfig::saveAllData));
+        Runtime.getRuntime().addShutdownHook(new Thread(appConfigRegacy::saveAllData));
 
         // 1. 공통 헬퍼 View를 먼저 생성합니다.
-        SharedView sharedView = new SharedView(appConfig, sc);
+        SharedView sharedView = new SharedView(appConfigRegacy, sc);
 
         // 2. 각 도메인 View를 생성하며, 필요에 따라 SharedView를 주입합니다.
-        UserView userView = new UserView(appConfig, sc, sharedView);
-        ChannelView channelView = new ChannelView(appConfig, sc, sharedView);
-        ParticipationView participationView = new ParticipationView(appConfig, sc, sharedView);
-        MessageView messageView = new MessageView(appConfig, sc, sharedView);
+        UserView userView = new UserView(appConfigRegacy, sc, sharedView);
+        ChannelView channelView = new ChannelView(appConfigRegacy, sc, sharedView);
+        ParticipationView participationView = new ParticipationView(appConfigRegacy, sc, sharedView);
+        MessageView messageView = new MessageView(appConfigRegacy, sc, sharedView);
 
         while (true) {
             try {

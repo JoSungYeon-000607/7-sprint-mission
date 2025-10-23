@@ -4,19 +4,19 @@ import com.sprint.mission.discodeit.entity.DirectMessage;
 import com.sprint.mission.discodeit.repository.DirectMessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.DirectMessageService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-public class JCFDirectMessageService extends JCFBaseService<DirectMessage, UUID, DirectMessageRepository> implements DirectMessageService {
+@Service
+public class DirectMessageServiceImpl extends BaseServiceImpl<DirectMessage, UUID, DirectMessageRepository> implements DirectMessageService {
 
-    private final DirectMessageRepository directMessageRepository;
     private final UserRepository userRepository; // 사용자 존재 여부 확인을 위해 추가
 
-    public JCFDirectMessageService(DirectMessageRepository directMessageRepository, UserRepository userRepository) {
+    public DirectMessageServiceImpl(DirectMessageRepository directMessageRepository, UserRepository userRepository) {
         super(directMessageRepository);
-        this.directMessageRepository = directMessageRepository;
         this.userRepository = userRepository;
     }
 
@@ -34,22 +34,22 @@ public class JCFDirectMessageService extends JCFBaseService<DirectMessage, UUID,
         DirectMessage newDirectMessage = DirectMessage.create(senderId, receiverId, message);
 
         // 3. 데이터 저장
-        directMessageRepository.save(newDirectMessage);
+        save(newDirectMessage);
         return newDirectMessage;
     }
 
     @Override
     public List<DirectMessage> getMessagesByReceiver(UUID receiverId) {
-        return directMessageRepository.findByReceiverId(receiverId);
+        return repository.findByReceiverId(receiverId);
     }
 
     @Override
     public List<DirectMessage> getMessagesBySender(UUID senderId) {
-        return directMessageRepository.findBySenderId(senderId);
+        return repository.findBySenderId(senderId);
     }
 
     @Override
     public List<DirectMessage> getConversation(UUID userOneId, UUID userTwoId) {
-        return directMessageRepository.findByParticipants(userOneId, userTwoId);
+        return repository.findByParticipants(userOneId, userTwoId);
     }
 }
