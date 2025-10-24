@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.repository;
 
 import com.sprint.mission.discodeit.entity.ChannelMessage;
+import org.springframework.context.annotation.Primary;
 
 import java.util.List;
 import java.util.UUID;

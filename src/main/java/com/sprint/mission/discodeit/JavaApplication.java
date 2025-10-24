@@ -11,7 +11,7 @@ public class JavaApplication {
     public static void main(String[] args) {
         AppConfigRegacy appConfigRegacy = new AppConfigRegacy();
         Scanner sc = new Scanner(System.in);
-        Runtime.getRuntime().addShutdownHook(new Thread(appConfigRegacy::saveAllData));
+//        Runtime.getRuntime().addShutdownHook(new Thread(appConfigRegacy::saveAllData));
 
         // 1. 공통 헬퍼 View를 먼저 생성합니다.
         SharedView sharedView = new SharedView(appConfigRegacy, sc);
