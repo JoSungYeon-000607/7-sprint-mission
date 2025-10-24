@@ -4,8 +4,10 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelMessage;
 import com.sprint.mission.discodeit.entity.Participation;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.service.jcf.ChannelMessageServiceImpl;
-import com.sprint.mission.discodeit.service.jcf.UserServiceImpl;
+import com.sprint.mission.discodeit.service.ChannelMessageService;
+import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.impl.ChannelMessageServiceImpl;
+import com.sprint.mission.discodeit.service.impl.UserServiceImpl;
 import com.sprint.mission.discodeit.utils.AppConfigRegacy;
 import com.sprint.mission.discodeit.utils.DateUtils;
 
@@ -13,8 +15,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ChannelMessageView {
-    private final ChannelMessageServiceImpl channelMessageService;
-    private final UserServiceImpl userService;
+    private final ChannelMessageService channelMessageService;
+    private final UserService userService;
     private final Scanner sc;
     private final SharedView sharedView;
 

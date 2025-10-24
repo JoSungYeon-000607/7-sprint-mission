@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.repository.ChannelMessageRepository;
 import com.sprint.mission.discodeit.repository.ParticipationRepository;
 import com.sprint.mission.discodeit.service.ChannelMessageService;
 import com.sprint.mission.discodeit.utils.ParticipationDualKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

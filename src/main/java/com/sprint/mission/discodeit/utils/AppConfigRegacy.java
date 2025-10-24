@@ -2,30 +2,36 @@ package com.sprint.mission.discodeit.utils;
 
 import com.sprint.mission.discodeit.data.DataKey;
 import com.sprint.mission.discodeit.data.DataPersistenceManager;
+import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.repository.impl.*;
+import com.sprint.mission.discodeit.service.*;
 import com.sprint.mission.discodeit.service.impl.*;
+import lombok.Getter;
 
+@Getter
 public class AppConfigRegacy {
 
     // 모든 설정과 컴포넌트를 소유하고 관리합니다.
 //    private final ConfigurationLoader configLoader;
 //    private final JsonPersistenceManager persistenceManager;
-    private final DataPersistenceManager dataPersistenceManager;
+//    private final DataPersistenceManager dataPersistenceManager;
 
-    private final UserRepositoryImpl userRepository;
-    private final ChannelRepositoryImpl channelRepository;
-    private final ParticipationRepositoryImpl participationRepository;
-    private final ChannelMessageRepositoryImpl channelMessageRepository;
-    private final DirectMessageRepositoryImpl directMessageRepository;
-    private final UserServiceImpl userService;
-    private final ChannelServiceImpl channelService;
-    private final ParticipationServiceImpl participationService;
-    private final ChannelMessageServiceImpl channelMessageService;
-    private final DirectMessageServiceImpl directMessageService;
+    private final UserRepository userRepository;
+    private final ChannelRepository channelRepository;
+    private final ParticipationRepository participationRepository;
+    private final ChannelMessageRepository channelMessageRepository;
+    private final DirectMessageRepository directMessageRepository;
+    // --- Service Getters ---
+
+    private final UserService userService;
+    private final ChannelService channelService;
+    private final ParticipationService participationService;
+    private final ChannelMessageService channelMessageService;
+    private final DirectMessageService directMessageService;
 
 
     public AppConfigRegacy() {
-        this.dataPersistenceManager = DataPersistenceManager.getInstance();
+//        this.dataPersistenceManager = DataPersistenceManager
 
 
         // 2. Repository 생성
@@ -36,7 +42,7 @@ public class AppConfigRegacy {
         this.directMessageRepository = new DirectMessageRepositoryImpl();
 
         // 3. 데이터 로드
-        loadAllData();
+//        loadAllData();
 
         // 4. Service 생성 및 의존성 주입
         this.userService = new UserServiceImpl(userRepository, participationRepository, channelMessageRepository, directMessageRepository);
@@ -48,31 +54,24 @@ public class AppConfigRegacy {
 
     }
 
-    private void loadAllData() {
-        userRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.USER));
-        channelRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.CHANNEL));
-        participationRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.PARTICIPATION));
-        channelMessageRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.CHANNEL_MESSAGE));
-        directMessageRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.DIRECT_MESSAGE));
-        System.out.println("모든 데이터를 파일로부터 로드했습니다.");
-        System.out.println("유저 수 : " + userRepository.getDataMap().size());
-    }
-
-    public void saveAllData() {
-        dataPersistenceManager.saveData(DataKey.USER, userRepository.getDataMap());
-        dataPersistenceManager.saveData(DataKey.CHANNEL, channelRepository.getDataMap());
-        dataPersistenceManager.saveData(DataKey.PARTICIPATION, participationRepository.getDataMap());
-        dataPersistenceManager.saveData(DataKey.CHANNEL_MESSAGE, channelMessageRepository.getDataMap());
-        dataPersistenceManager.saveData(DataKey.DIRECT_MESSAGE, directMessageRepository.getDataMap());
-        System.out.println("모든 데이터를 파일에 저장했습니다.");
-    }
-
-    // --- Service Getters ---
-    public UserServiceImpl getUserService() { return userService; }
-    public ChannelServiceImpl getChannelService() { return channelService; }
-    public ParticipationServiceImpl getParticipationService() { return participationService; }
-    public ChannelMessageServiceImpl getChannelMessageService() { return channelMessageService; }
-    public DirectMessageServiceImpl getDirectMessageService() { return directMessageService; }
+//    private void loadAllData() {
+//        userRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.USER));
+//        channelRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.CHANNEL));
+//        participationRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.PARTICIPATION));
+//        channelMessageRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.CHANNEL_MESSAGE));
+//        directMessageRepository.loadDataMap(dataPersistenceManager.loadData(DataKey.DIRECT_MESSAGE));
+//        System.out.println("모든 데이터를 파일로부터 로드했습니다.");
+//        System.out.println("유저 수 : " + userRepository.getDataMap().size());
+//    }
+//
+//    public void saveAllData() {
+//        dataPersistenceManager.saveData(DataKey.USER, userRepository.getDataMap());
+//        dataPersistenceManager.saveData(DataKey.CHANNEL, channelRepository.getDataMap());
+//        dataPersistenceManager.saveData(DataKey.PARTICIPATION, participationRepository.getDataMap());
+//        dataPersistenceManager.saveData(DataKey.CHANNEL_MESSAGE, channelMessageRepository.getDataMap());
+//        dataPersistenceManager.saveData(DataKey.DIRECT_MESSAGE, directMessageRepository.getDataMap());
+//        System.out.println("모든 데이터를 파일에 저장했습니다.");
+//    }
 
     /**
      * UI 계층에서 설정 파일에 접근할 수 있도록 ConfigurationLoader를 제공합니다.
