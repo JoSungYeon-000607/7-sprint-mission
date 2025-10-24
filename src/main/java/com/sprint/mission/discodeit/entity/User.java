@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -37,7 +38,7 @@ public class User extends BaseEntity<UUID> {
     /**
      * 마지막으로 온라인이었던 시간 (Unix Timestamp)
      */
-    private Long lastOnlineAt;
+    private Instant lastOnlineAt;
 
     /**
      * 외부에서 `new User()`를 통해 불완전한 객체를 생성하는 것을 막기 위해 생성자를 protected로 선언합니다.
@@ -136,7 +137,7 @@ public class User extends BaseEntity<UUID> {
      */
     public void goOnline() {
         this.state = State.ONLINE;
-        this.lastOnlineAt = System.currentTimeMillis();
+        this.lastOnlineAt = Instant.now();
         super.updateTimestamp();
     }
 
@@ -195,7 +196,7 @@ public class User extends BaseEntity<UUID> {
     public String getEmail() { return email; }
     public String getPhoneNum() { return phoneNum; }
     public String getNickname() { return nickname; }
-    public Long getLastOnlineAt() { return lastOnlineAt; }
+    public Instant getLastOnlineAt() { return lastOnlineAt; }
     public String getPassword() { return password; }
     public State getState() { return state; }
 

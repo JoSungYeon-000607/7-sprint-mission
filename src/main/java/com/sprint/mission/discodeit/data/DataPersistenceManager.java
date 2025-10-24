@@ -14,11 +14,6 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 데이터의 영속성(Persistence)을 관리하는 클래스입니다.
- * 자바 직렬화(Serialization)를 사용하여 Map 객체를 파일에 직접 저장하고 불러옵니다.
- * 이 클래스는 싱글톤(Singleton) 패턴으로 구현되어 프로그램 전체에서 단 하나의 인스턴스만 사용됩니다.
- */
 @Component
 @RequiredArgsConstructor
 public class DataPersistenceManager {

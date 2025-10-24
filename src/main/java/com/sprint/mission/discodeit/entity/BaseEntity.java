@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.utils.Deletable;
 import com.sprint.mission.discodeit.utils.Identifiable;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -27,12 +28,12 @@ public abstract class BaseEntity<T> implements Identifiable<T>, Deletable, Seria
      * 엔티티가 처음 생성된 시각을 저장합니다. (Unix Timestamp)
      * `final`로 선언하여 변경되지 않도록 보장합니다.
      */
-    private final Long createdAt;
+    private final Instant createdAt;
 
     /**
      * 엔티티가 마지막으로 수정된 시각을 저장합니다. (Unix Timestamp)
      */
-    private Long updatedAt;
+    private Instant updatedAt;
 
     /**
      * 논리적 삭제(Soft Delete) 상태를 나타내는 플래그입니다.
@@ -51,9 +52,8 @@ public abstract class BaseEntity<T> implements Identifiable<T>, Deletable, Seria
             throw new IllegalArgumentException("ID는 null일 수 없습니다.");
         }
         this.id = id;
-        long now = System.currentTimeMillis();
-        this.createdAt = now;
-        this.updatedAt = now;
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class BaseEntity<T> implements Identifiable<T>, Deletable, Seria
      *
      * @return Long 타입의 Unix Timestamp
      */
-    public Long getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
@@ -105,7 +105,7 @@ public abstract class BaseEntity<T> implements Identifiable<T>, Deletable, Seria
      *
      * @return Long 타입의 Unix Timestamp
      */
-    public Long getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
@@ -119,7 +119,7 @@ public abstract class BaseEntity<T> implements Identifiable<T>, Deletable, Seria
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }  수정사항이 바로 반영 되면 이전 반영 시간과 같아져 테스트를 위해 넣었던 코드입니다.
-        this.updatedAt = System.currentTimeMillis();
+        this.updatedAt = Instant.now();
     }
 
     @Override
