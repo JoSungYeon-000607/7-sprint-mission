@@ -59,11 +59,11 @@ public class AppConfigRegacy {
 //        loadAllData();
 
         // 4. Service 생성 및 의존성 주입
-        this.userService = new UserServiceImpl(userRepository, participationRepository, channelMessageRepository, directMessageRepository);
+        this.userService = new UserServiceImpl(userRepository);
         this.channelService = new ChannelServiceImpl(channelRepository);
-        this.participationService = new ParticipationServiceImpl(participationRepository, userRepository, channelRepository);
-        this.channelMessageService = new ChannelMessageServiceImpl(channelMessageRepository, participationRepository);
-        this.directMessageService = new DirectMessageServiceImpl(directMessageRepository, userRepository);
+        this.participationService = new ParticipationServiceImpl(participationRepository, userService, channelService);
+        this.channelMessageService = new ChannelMessageServiceImpl(channelMessageRepository, participationService);
+        this.directMessageService = new DirectMessageServiceImpl(directMessageRepository, userService);
 
 
     }

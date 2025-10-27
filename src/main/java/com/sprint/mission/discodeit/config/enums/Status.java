@@ -4,7 +4,7 @@ package com.sprint.mission.discodeit.config.enums;
  * 사용자의 다양한 상태를 나타내는 열거형(Enum)입니다.
  * 각 상태는 화면에 표시될 수 있는 한글 설명(description)을 포함합니다.
  */
-public enum State {
+public enum Status {
 
     /**
      * 사용자가 현재 접속하여 활동 중인 상태입니다.
@@ -38,7 +38,7 @@ public enum State {
      * enum의 생성자는 항상 private입니다.
      * @param description 각 상태에 대한 한글 설명
      */
-    State(String description) {
+    Status(String description) {
         this.description = description;
     }
 

@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.user;
 
 import com.sprint.mission.discodeit.common.service.BaseService;
+import com.sprint.mission.discodeit.user.dto.UserResponseDTO;
 
 import java.util.UUID;
 
@@ -31,35 +32,8 @@ public interface UserService extends BaseService<User, UUID> {
      * @param phoneNum   새로운 전화번호
      * @return 수정이 완료된 User 객체
      */
-    User updateProfile(UUID userId, String nickname, String email, String phoneNum);
+    UserResponseDTO updateProfile(UUID userId, String nickname, String email, String phoneNum);
 
-    /**
-     * 사용자의 상태를 '온라인'으로 변경합니다.
-     *
-     * @param userId 상태를 변경할 사용자의 고유 ID
-     */
-    void goOnline(UUID userId);
-
-    /**
-     * 사용자의 상태를 '오프라인'으로 변경합니다.
-     *
-     * @param userId 상태를 변경할 사용자의 고유 ID
-     */
-    void goOffline(UUID userId);
-
-    /**
-     * 사용자의 상태를 '자리 비움'으로 변경합니다.
-     *
-     * @param userId 상태를 변경할 사용자의 고유 ID
-     */
-    void setAway(UUID userId);
-
-    /**
-     * 사용자의 상태를 '방해 금지'로 변경합니다.
-     *
-     * @param userId 상태를 변경할 사용자의 고유 ID
-     */
-    void setDoNotDisturb(UUID userId);
 
     /**
      * 사용자의 비밀번호를 변경합니다.
@@ -76,7 +50,7 @@ public interface UserService extends BaseService<User, UUID> {
      * @return 조회된 User 객체
      * @throws java.util.NoSuchElementException 해당 이름의 사용자가 없을 경우
      */
-    User findByUsername(String username);
+    UserResponseDTO findByUsername(String username);
 
     /**
      * 특정 사용자 이름이 이미 존재하는지 확인합니다.
@@ -86,39 +60,8 @@ public interface UserService extends BaseService<User, UUID> {
      */
     boolean existsByUsername(String username);
 
-    /**
-     * 특정 사용자가 '온라인' 상태인지 확인합니다.
-     *
-     * @param userId 확인할 사용자의 고유 ID
-     * @return 온라인 상태이면 true, 아니면 false
-     */
-    boolean isOnline(UUID userId);
 
-    /**
-     * 특정 사용자가 '오프라인' 상태인지 확인합니다.
-     *
-     * @param userId 확인할 사용자의 고유 ID
-     * @return 오프라인 상태이면 true, 아니면 false
-     */
-    boolean isOffline(UUID userId);
-
-    /**
-     * 특정 사용자가 '자리 비움' 상태인지 확인합니다.
-     *
-     * @param userId 확인할 사용자의 고유 ID
-     * @return 자리 비움 상태이면 true, 아니면 false
-     */
-    boolean isAway(UUID userId);
-
-    /**
-     * 특정 사용자가 '방해 금지' 상태인지 확인합니다.
-     *
-     * @param userId 확인할 사용자의 고유 ID
-     * @return 방해 금지 상태이면 true, 아니면 false
-     */
-    boolean isDoNotDisturb(UUID userId);
-
-    User findByUsernameNonDel(String username);
+    UserResponseDTO findByUsernameNonDel(String username);
 
     boolean existsByUsernameNonDel(String username);
 }

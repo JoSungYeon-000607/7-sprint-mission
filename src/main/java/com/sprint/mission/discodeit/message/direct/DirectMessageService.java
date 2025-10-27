@@ -41,4 +41,6 @@ public interface DirectMessageService extends BaseService<DirectMessage, UUID> {
      * @return 두 사용자 간의 대화 목록
      */
     List<DirectMessage> getConversation(UUID userOneId, UUID userTwoId);
+
+    void delAllBySenderId(UUID senderId);
 }

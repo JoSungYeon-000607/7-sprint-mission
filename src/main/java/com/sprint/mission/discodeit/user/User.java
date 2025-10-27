@@ -1,9 +1,11 @@
 package com.sprint.mission.discodeit.user;
 
 import com.sprint.mission.discodeit.common.entity.BaseEntity;
-import com.sprint.mission.discodeit.config.enums.State;
+import com.sprint.mission.discodeit.user.state.UserStatus;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -11,6 +13,8 @@ import java.util.UUID;
  * 이 클래스는 사용자의 데이터뿐만 아니라, 자신의 상태를 직접 관리하는 비즈니스 로직을 포함합니다.
  * (풍부한 도메인 모델, Rich Domain Model)
  */
+@Getter
+@Setter
 public class User extends BaseEntity<UUID> {
 
     // --- Fields ---
@@ -21,6 +25,8 @@ public class User extends BaseEntity<UUID> {
     /**
      * 암호화되어 저장되는 사용자 비밀번호
      */
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private String password;
     /**
      * 사용자 이메일 주소
@@ -34,15 +40,8 @@ public class User extends BaseEntity<UUID> {
      * 사용자 전화번호
      */
     private String phoneNum;
-    /**
-     * 사용자의 현재 상태 (ONLINE, OFFLINE 등)
-     */
-    private State state;
-    /**
-     * 마지막으로 온라인이었던 시간 (Unix Timestamp)
-     */
-    private Instant lastOnlineAt;
 
+    private UserStatus userStatus;
     /**
      * 외부에서 `new User()`를 통해 불완전한 객체를 생성하는 것을 막기 위해 생성자를 protected로 선언합니다.
      * 객체 생성은 반드시 `create()` 정적 팩토리 메서드를 통해서만 이루어져야 합니다.
@@ -63,7 +62,7 @@ public class User extends BaseEntity<UUID> {
      * @param phoneNum    전화번호 (선택)
      * @return 완전히 생성된 User 객체
      */
-    public static User create(String username, String rawPassword, String email, String nickname, String phoneNum) {
+    public static User createUser(String username, String rawPassword, String email, String nickname, String phoneNum) {
         // Guard Clauses: 객체 생성 전 필수 값들을 검증합니다.
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("사용자 이름은 필수입니다.");
@@ -83,8 +82,6 @@ public class User extends BaseEntity<UUID> {
         user.email = email;
         user.nickname = nickname;
         user.phoneNum = phoneNum;
-        user.state = State.OFFLINE; // 사용자는 생성 시 기본적으로 로그인 전까지 오프라인 상태입니다.
-        user.lastOnlineAt = user.getCreatedAt(); // 최초 접속 시간은 생성 시간과 동일하게 설정합니다.
 
         return user;
     }
@@ -134,53 +131,7 @@ public class User extends BaseEntity<UUID> {
 
     // --- 상태 변경 비즈니스 메서드 ---
 
-    /**
-     * '온라인이 된다'는 비즈니스 이벤트를 처리합니다.
-     * 상태와 마지막 접속 시간을 함께 변경하여 데이터의 일관성을 유지합니다.
-     */
-    public void goOnline() {
-        this.state = State.ONLINE;
-        this.lastOnlineAt = Instant.now();
-        super.updateTimestamp();
-    }
 
-    /**
-     * '오프라인이 된다'는 비즈니스 이벤트를 처리합니다.
-     */
-    public void goOffline() {
-        this.state = State.OFFLINE;
-        super.updateTimestamp();
-    }
-
-    /**
-     * '자리 비움으로 설정한다'는 비즈니스 이벤트를 처리합니다.
-     * 오프라인 상태에서는 변경할 수 없다는 비즈니스 규칙을 포함합니다.
-     */
-    public void setAway() {
-        if (this.isOffline()) {
-            throw new IllegalStateException("오프라인 상태에서는 자리 비움으로 변경할 수 없습니다.");
-        }
-        this.state = State.AFK;
-        super.updateTimestamp();
-    }
-
-    /**
-     * '방해 금지로 설정한다'는 비즈니스 이벤트를 처리합니다.
-     */
-    public void setDoNotDisturb() {
-        if (this.isOffline()) {
-            throw new IllegalStateException("오프라인 상태에서는 방해 금지로 변경할 수 없습니다.");
-        }
-        this.state = State.DND;
-        super.updateTimestamp();
-    }
-
-    // --- 상태 확인 편의 메서드 ---
-
-    public boolean isOnline() { return this.state == State.ONLINE; }
-    public boolean isOffline() { return this.state == State.OFFLINE; }
-    public boolean isAway() { return this.state == State.AFK; }
-    public boolean isDoNotDisturb() { return this.state == State.DND; }
 
     // --- private 헬퍼 메서드 ---
 
@@ -194,15 +145,6 @@ public class User extends BaseEntity<UUID> {
         return "encrypted_" + password;
     }
 
-    // --- Getters ---
-    public String getUsername() { return username; }
-    public String getEmail() { return email; }
-    public String getPhoneNum() { return phoneNum; }
-    public String getNickname() { return nickname; }
-    public Instant getLastOnlineAt() { return lastOnlineAt; }
-    public String getPassword() { return password; }
-    public State getState() { return state; }
-
 
     @Override
     public String toString() {
@@ -213,7 +155,6 @@ public class User extends BaseEntity<UUID> {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", nickname='" + nickname + '\'' +
-                ", state=" + state +
                 '}';
     }
 }

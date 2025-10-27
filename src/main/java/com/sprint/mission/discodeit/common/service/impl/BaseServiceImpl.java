@@ -23,7 +23,7 @@ public abstract class BaseServiceImpl<T extends Identifiable<ID> & Deletable, ID
 
     protected final R repository;
 
-    protected BaseServiceImpl(R repository) {
+    public BaseServiceImpl(R repository) {
         this.repository = repository;
     }
 
@@ -103,13 +103,6 @@ public abstract class BaseServiceImpl<T extends Identifiable<ID> & Deletable, ID
     }
 
     @Override
-    public void deleteAllById(Iterable<ID> ids) {
-        // deleteAllById는 여러 건을 삭제하므로, 일부가 존재하지 않더라도 예외를 던지지 않고 존재하는 것만 지우는 것이 일반적인 정책입니다.
-        // 만약 모든 ID가 반드시 존재해야 한다면, 여기서 추가적인 검증 로직이 필요합니다.
-        repository.deleteAllById(ids);
-    }
-
-    @Override
     public void deleteAll() {
         repository.deleteAll();
     }
@@ -142,5 +135,13 @@ public abstract class BaseServiceImpl<T extends Identifiable<ID> & Deletable, ID
     @Override
     public void deleteAllByIsDel() {
         repository.deleteAllByIsDel();
+    }
+
+    @Override
+    public void deleteAllByIds(Iterable<ID> ids){
+        if(ids == null){
+            return;
+        }
+        repository.deleteAllById(ids);
     }
 }

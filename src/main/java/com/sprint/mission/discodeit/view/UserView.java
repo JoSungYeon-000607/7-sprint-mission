@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.view;
 
 import com.sprint.mission.discodeit.user.User;
 import com.sprint.mission.discodeit.user.UserService;
+import com.sprint.mission.discodeit.user.state.UserStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.util.Scanner;
 public class UserView {
 
     private final UserService userService;
+    private final UserStatusService userStatusService;
     private final Scanner sc;
     private final SharedView sharedView;
 
@@ -112,13 +114,16 @@ public class UserView {
         sc.nextLine();
 
         switch (choice) {
-            case 1: userService.goOnline(user.getId()); break;
-            case 2: userService.goOffline(user.getId()); break;
-            case 3: userService.setAway(user.getId()); break;
-            case 4: userService.setDoNotDisturb(user.getId()); break;
+            case 1: userStatusService.toOnline(user.getId()); break;
+            case 2: userStatusService.toOffline(user.getId()); break;
+            case 3: userStatusService.toAway(user.getId()); break;
+            case 4:
+                System.out.println("다른 용무중 상태 메시지를 입력해주세요 : ");
+                userStatusService.toDoNotDisturb(user.getId(), sc.nextLine());
+                break;
             default: System.out.println("잘못된 선택입니다."); return;
         }
-        System.out.println("사용자 상태 변경 완료: " + userService.findById(user.getId()).getState().getDescription());
+        System.out.println("사용자 상태 변경 완료: " + userService.findById(user.getId()).getUserStatus().getCustomStatusMessage());
     }
 
     private void changePassword() {

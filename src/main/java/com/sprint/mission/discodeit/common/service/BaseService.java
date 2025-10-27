@@ -115,13 +115,7 @@ public interface BaseService<T, ID> {
      */
     void deleteById(ID id);
 
-    /**
-     * 주어진 여러 ID에 해당하는 모든 엔티티를 물리적으로 삭제합니다.
-     *
-     * @param ids 삭제할 엔티티 ID들의 Iterable
-     */
-    void deleteAllById(Iterable<ID> ids);
-
+    void deleteAllByIds(Iterable<ID> ids);
     /**
      * 모든 엔티티를 물리적으로 삭제합니다.
      */

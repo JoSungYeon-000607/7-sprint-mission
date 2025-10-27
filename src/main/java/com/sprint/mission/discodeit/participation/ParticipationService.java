@@ -63,7 +63,7 @@ public interface ParticipationService extends BaseService<Participation, Partici
      * @return 채널의 소유자(OWNER)인 User 객체
      * @throws java.util.NoSuchElementException 소유자를 찾을 수 없는 경우
      */
-    User findOwner(UUID channelId);
+    List<Participation> findOwner(UUID channelId);
 
     /**
      * 특정 사용자가 참여하고 있는 모든 채널의 참여 정보를 조회합니다.
@@ -109,5 +109,7 @@ public interface ParticipationService extends BaseService<Participation, Partici
      * @return 관리자일 경우 true, 아닌 경우 false
      */
     boolean isOwner(UUID channelId, UUID userId);
+
+    void deleteAllByUserId(UUID userId);
 
 }
