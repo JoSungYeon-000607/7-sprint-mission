@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.participation;
 
 import com.sprint.mission.discodeit.common.repository.impl.BaseRepositoryImpl;
-import com.sprint.mission.discodeit.common.utils.ParticipationDualKey;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

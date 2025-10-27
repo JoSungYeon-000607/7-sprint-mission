@@ -20,10 +20,4 @@ public interface ChannelMessageRepository extends BaseRepository<ChannelMessage,
      * @return 해당 유저의 모든 메시지 목록
      */
     List<ChannelMessage> findAllBySenderId(UUID senderId);
-
-    /**
-     * 특정 유저가 보낸 모든 채널 메시지를 삭제합니다.
-     * @param senderId 삭제할 유저의 ID
-     */
-    void deleteAllBySenderId(UUID senderId);
 }

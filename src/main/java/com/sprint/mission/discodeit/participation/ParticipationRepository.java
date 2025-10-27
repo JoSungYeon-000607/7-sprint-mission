@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.participation;
 
 import com.sprint.mission.discodeit.common.repository.BaseRepository;
-import com.sprint.mission.discodeit.common.utils.ParticipationDualKey;
 
 import java.util.List;
 import java.util.UUID;

@@ -2,8 +2,6 @@ package com.sprint.mission.discodeit.participation;
 
 import com.sprint.mission.discodeit.common.service.BaseService;
 import com.sprint.mission.discodeit.config.enums.Role;
-import com.sprint.mission.discodeit.user.User;
-import com.sprint.mission.discodeit.common.utils.ParticipationDualKey;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +21,8 @@ public interface ParticipationService extends BaseService<Participation, Partici
      */
     Participation joinChannel(UUID channelId, UUID userId, String nickname);
 
+    Participation setReadAt(UUID channelId, UUID userId);
+
     /**
      * 사용자 스스로 채널에서 나갑니다.
      *
@@ -31,7 +31,7 @@ public interface ParticipationService extends BaseService<Participation, Partici
      * @return 채널의 마지막 사용자가 나갔으면 true아니면 False
      * ** 추후App에서 Channel에게 삭제 명령을 내리게 하기 위해 boolean을 리턴함**
      */
-    boolean leaveChannel(UUID channelId, UUID userId);
+    void leaveChannel(UUID channelId, UUID userId);
 
     /**
      * (추천) 관리자/소유자가 다른 사용자를 채널에서 강제로 내보냅니다.
@@ -111,5 +111,6 @@ public interface ParticipationService extends BaseService<Participation, Partici
     boolean isOwner(UUID channelId, UUID userId);
 
     void deleteAllByUserId(UUID userId);
+
 
 }

@@ -24,4 +24,6 @@ public interface ChannelMessageService extends BaseService<ChannelMessage, UUID>
      * @return 해당 채널의 메시지 목록
      */
     List<ChannelMessage> getMessagesByChannel(UUID channelId);
+
+    void deleteAllBySenderId(UUID senderId);
 }

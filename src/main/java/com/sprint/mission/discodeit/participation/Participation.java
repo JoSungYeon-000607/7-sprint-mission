@@ -3,15 +3,17 @@ package com.sprint.mission.discodeit.participation;
 import com.sprint.mission.discodeit.channel.Channel;
 import com.sprint.mission.discodeit.common.entity.BaseEntity;
 import com.sprint.mission.discodeit.config.enums.Role;
-import com.sprint.mission.discodeit.common.utils.ParticipationDualKey;
 import com.sprint.mission.discodeit.user.User;
+import lombok.Setter;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public class Participation extends BaseEntity<ParticipationDualKey> {
     private String nickname;
     private Role role;
-
+    @Setter
+    private Instant lastReadAt;
     /**
      * '어떤 유저'가 '어떤 채널'에 참여했는지에 대한 관계를 고유하게 식별하는 복합 키(Composite Key)입니다.
      * 이 키는 Participation 엔티티의 기본 키(Primary Key)로 사용됩니다.
@@ -52,7 +54,7 @@ public class Participation extends BaseEntity<ParticipationDualKey> {
         return getId().channelId();
     }
     public UUID getUserId() {
-        return getId().userId();
+        return getId().authorId();
     }
     public String getNickname() {
         return nickname;
@@ -60,6 +62,7 @@ public class Participation extends BaseEntity<ParticipationDualKey> {
     public Role getRole() {
         return role;
     }
+    public Instant getLastReadAt() {return lastReadAt;}
 
     @Override
     public String toString() {
@@ -68,4 +71,6 @@ public class Participation extends BaseEntity<ParticipationDualKey> {
                 ", role=" + role +
                 "} " ;
     }
+
+
 }

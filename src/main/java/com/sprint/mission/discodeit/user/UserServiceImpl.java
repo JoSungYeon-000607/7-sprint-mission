@@ -1,15 +1,9 @@
 package com.sprint.mission.discodeit.user;
 
 import com.sprint.mission.discodeit.common.service.impl.BaseServiceImpl;
-import com.sprint.mission.discodeit.participation.Participation;
-import com.sprint.mission.discodeit.message.channel.ChannelMessageRepository;
-import com.sprint.mission.discodeit.message.direct.DirectMessageRepository;
-import com.sprint.mission.discodeit.participation.ParticipationRepository;
-import com.sprint.mission.discodeit.common.utils.ParticipationDualKey;
 import com.sprint.mission.discodeit.user.dto.UserResponseDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;

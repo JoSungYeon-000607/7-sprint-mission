@@ -31,13 +31,4 @@ public class ChannelMessageRepositoryImpl extends BaseRepositoryImpl<ChannelMess
                 .sorted(Comparator.comparing(ChannelMessage::getCreatedAt))
                 .toList();
     }
-
-    @Override
-    public void deleteAllBySenderId(UUID senderId) {
-        if(findAllBySenderId(senderId).isEmpty()){
-            return;
-        }
-        findAllBySenderId(senderId).stream()
-                .map(ChannelMessage::getId).forEach(this::deleteById);
-    }
 }

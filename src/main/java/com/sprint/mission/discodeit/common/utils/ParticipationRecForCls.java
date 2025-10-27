@@ -71,7 +71,7 @@ public final class ParticipationRecForCls {
     public String toString() {
         return "ChannelUserKey{" +
                 "channelId=" + channelId +
-                ", userId=" + userId +
+                ", authorId=" + userId +
                 '}';
     }
 }

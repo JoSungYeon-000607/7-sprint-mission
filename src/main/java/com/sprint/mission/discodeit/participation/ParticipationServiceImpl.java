@@ -1,13 +1,14 @@
 package com.sprint.mission.discodeit.participation;
 
+import com.sprint.mission.discodeit.channel.ChannelService;
 import com.sprint.mission.discodeit.common.service.impl.BaseServiceImpl;
 import com.sprint.mission.discodeit.config.enums.Role;
-import com.sprint.mission.discodeit.user.User;
-import com.sprint.mission.discodeit.channel.ChannelRepository;
-import com.sprint.mission.discodeit.user.UserRepository;
-import com.sprint.mission.discodeit.common.utils.ParticipationDualKey;
+import com.sprint.mission.discodeit.config.exception.ChannelNotFoundException;
+import com.sprint.mission.discodeit.config.exception.UserNotFoundException;
+import com.sprint.mission.discodeit.user.UserService;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -15,15 +16,13 @@ import java.util.UUID;
 
 @Service
 public class ParticipationServiceImpl extends BaseServiceImpl<Participation, ParticipationDualKey, ParticipationRepository> implements ParticipationService {
+    private final UserService userService;
+    private final ChannelService channelService;
 
-    // Service 대신 Repository를 직접 참조하여 순환 참조를 방지합니다.
-    private final UserRepository userRepository;
-    private final ChannelRepository channelRepository;
-
-    public ParticipationServiceImpl(ParticipationRepository participationRepository, UserRepository userRepository, ChannelRepository channelRepository) {
+    public ParticipationServiceImpl(ParticipationRepository participationRepository, UserService userService, ChannelService channelService) {
         super(participationRepository);
-        this.userRepository = userRepository;
-        this.channelRepository = channelRepository;
+        this.userService = userService;
+        this.channelService = channelService;
     }
 
     @Override
@@ -39,7 +38,6 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
                 // 논리적으로 삭제된 상태이면, 복원하고 정보를 업데이트합니다.
                 p.restore(); // isDeleted를 false로 변경
                 p.changeNickname(nickname); // 닉네임 변경
-                save(p);
                 return p;
             }
             // 이미 활성 상태이면, 예외를 발생시킵니다.
@@ -48,29 +46,34 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
         // 3b. 기존 참여 정보가 전혀 없는 경우 (최초 참여)
         Participation newParticipation;
         // 새로운 참여 정보를 생성하고 저장합니다.
-        if(userRepository.findById(userId).orElseThrow(()-> new NoSuchElementException("사용자를 찾을 수 없습니다.")).getUsername().equals("admin")){
+        if(userService.findById(userId).getUsername().equals("admin")){
             newParticipation = Participation.create(channelId, userId, nickname, Role.ADMIN);
         }else{
             newParticipation = Participation.create(channelId, userId, nickname, Role.USER);
         }
-        save(newParticipation);
         return newParticipation;
     }
 
     @Override
-    public boolean leaveChannel(UUID channelId, UUID userId) {
+    public Participation setReadAt(UUID channelId, UUID userId) {
+        Participation participation = findParticipation(channelId, userId);
+        participation.setLastReadAt(Instant.now());
+        return save(participation);
+    }
+
+    @Override
+    public void leaveChannel(UUID channelId, UUID userId) {
         // 1. 해당 참여 정보를 조회합니다. (없으면 예외 발생)
         Participation participation = findParticipation(channelId, userId);
 
-        // [엣지 케이스] 채널의 마지막 관리자인 경우, 채널을 떠날 수 없습니다.
         if (isLastAdmin(channelId, userId)) {
-            throw new IllegalStateException("채널의 마지막 관리자는 채널을 떠날 수 없습니다.");
+            channelService.deleteById(channelId);
         }
 
         softDeleteById(participation.getId());
 
         // 삭제 후, 채널에 활성 참여자가 남아있는지 확인하여 결과를 반환합니다.
-        return repository.findAllByChannelId(channelId).isEmpty();
+        repository.findAllByChannelId(channelId);
     }
 
     @Override
@@ -81,7 +84,7 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
         }
 
         // 1. 요청자가 채널의 소유주(ADMIN)인지 권한을 확인합니다.
-        if (!isOwner(channelId, adminUserId)) {
+        if (isOwner(channelId, adminUserId)) {
             throw new SecurityException("사용자를 강제 퇴장시킬 권한이 없습니다.");
         }
 
@@ -102,7 +105,7 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
     @Override
     public void changeRole(UUID channelId, UUID targetUserId, UUID actorId, Role newRole) {
         // 1. 요청자(actor)가 채널의 소유주(ADMIN)인지 권한을 확인합니다.
-        if (!isOwner(channelId, actorId)) {
+        if (isOwner(channelId, actorId)) {
             throw new SecurityException("사용자의 역할을 변경할 권한이 없습니다.");
         }
 
@@ -133,20 +136,27 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
     }
 
     @Override
-    public User findOwner(UUID channelId) {
+    public List<Participation> findOwner(UUID channelId) {
         return repository.findAllByChannelId(channelId).stream()
-                .filter(p -> p.getRole() == Role.ADMIN) // ADMIN을 소유주로 가정
-                .findFirst()
-                .flatMap(p -> userRepository.findByIdNonDel(p.getUserId()))
-                .orElseThrow(() -> new NoSuchElementException("해당 채널의 소유주를 찾을 수 없습니다."));
+                .filter(p -> p.getRole() == Role.ADMIN).toList();
     }
 
     @Override
     public boolean isOwner(UUID channelId, UUID userId) {
         try {
-            return findParticipation(channelId, userId).getRole() == Role.ADMIN;
+            return findParticipation(channelId, userId).getRole() != Role.ADMIN;
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("채널에 참여한 사용자가 아닙니다.");
+        }
+    }
+
+    @Override
+    public void deleteAllByUserId(UUID userId) {
+        List<Participation> participationsToDel = repository.findAllByUserId(userId);
+        if(!participationsToDel.isEmpty()){
+            deleteAllByIds(participationsToDel.stream()
+                    .map(Participation::getId)
+                    .toList());
         }
     }
 
@@ -167,11 +177,11 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
      * @throws NoSuchElementException 사용자나 채널이 없거나 삭제된 경우
      */
     private void validateUserAndChannelExist(UUID userId, UUID channelId) {
-        if (!userRepository.existsByIdNonDel(userId)) {
-            throw new NoSuchElementException("존재하지 않거나 탈퇴한 사용자입니다.");
+        if (!userService.existsByIdNonDel(userId)) {
+            throw new UserNotFoundException(userId);
         }
-        if (!channelRepository.existsByIdNonDel(channelId)) {
-            throw new NoSuchElementException("존재하지 않거나 삭제된 채널입니다.");
+        if (!channelService.existsByIdNonDel(channelId)) {
+            throw new ChannelNotFoundException(channelId);
         }
     }
 
@@ -180,7 +190,7 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
      */
     private boolean isLastAdmin(UUID channelId, UUID userId) {
         // 현재 사용자가 관리자가 아니면, 마지막 관리자일 수 없습니다.
-        if (!isOwner(channelId, userId)) {
+        if (isOwner(channelId, userId)) {
             return false;
         }
         // 채널의 모든 관리자 수를 셉니다.
