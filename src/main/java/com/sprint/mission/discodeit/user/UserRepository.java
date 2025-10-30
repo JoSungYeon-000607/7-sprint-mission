@@ -42,4 +42,6 @@ public interface UserRepository extends BaseRepository<User, UUID> {
      */
     boolean existsByUsernameNonDel(String username);
 
+    boolean existsByUserNickName(String nickName);
+
 }

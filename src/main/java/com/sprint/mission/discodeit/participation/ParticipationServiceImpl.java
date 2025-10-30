@@ -5,6 +5,8 @@ import com.sprint.mission.discodeit.common.service.impl.BaseServiceImpl;
 import com.sprint.mission.discodeit.config.enums.Role;
 import com.sprint.mission.discodeit.config.exception.ChannelNotFoundException;
 import com.sprint.mission.discodeit.config.exception.UserNotFoundException;
+import com.sprint.mission.discodeit.participation.dto.ParticipationRequestDTO;
+import com.sprint.mission.discodeit.participation.dto.ParticipationResponseDTO;
 import com.sprint.mission.discodeit.user.UserService;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +28,10 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
     }
 
     @Override
-    public Participation joinChannel(UUID channelId, UUID userId, String nickname) {
+    public ParticipationResponseDTO joinChannel(ParticipationRequestDTO requestDTO) {
+        UUID channelId = requestDTO.channelId();
+        UUID userId = requestDTO.userId();
+        String nickname = requestDTO.nickname();
         // 1. 사용자 및 채널의 존재 여부를 먼저 확인합니다.
         validateUserAndChannelExist(userId, channelId);
 
@@ -38,7 +43,7 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
                 // 논리적으로 삭제된 상태이면, 복원하고 정보를 업데이트합니다.
                 p.restore(); // isDeleted를 false로 변경
                 p.changeNickname(nickname); // 닉네임 변경
-                return p;
+                return ParticipationResponseDTO.from(p);
             }
             // 이미 활성 상태이면, 예외를 발생시킵니다.
             throw new IllegalStateException("이미 채널에 참가 되어있습니다.");
@@ -51,14 +56,14 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
         }else{
             newParticipation = Participation.create(channelId, userId, nickname, Role.USER);
         }
-        return newParticipation;
+        return ParticipationResponseDTO.from(newParticipation);
     }
 
     @Override
-    public Participation setReadAt(UUID channelId, UUID userId) {
+    public ParticipationResponseDTO setReadAt(UUID channelId, UUID userId) {
         Participation participation = findParticipation(channelId, userId);
         participation.setLastReadAt(Instant.now());
-        return save(participation);
+        return ParticipationResponseDTO.from(save(participation));
     }
 
     @Override
@@ -93,13 +98,17 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
     }
 
     @Override
-    public List<Participation> findParticipationsByChannelId(UUID channelId) {
-        return repository.findAllByChannelId(channelId);
+    public List<ParticipationResponseDTO> findParticipationsByChannelId(UUID channelId) {
+        return repository.findAllByChannelId(channelId).stream()
+                .map(ParticipationResponseDTO::from)
+                .toList();
     }
 
     @Override
-    public List<Participation> findParticipationsByUserId(UUID userId) {
-        return repository.findAllByUserId(userId);
+    public List<ParticipationResponseDTO> findParticipationsByUserId(UUID userId) {
+        return repository.findAllByUserId(userId).stream()
+                .map(ParticipationResponseDTO::from)
+                .toList();
     }
 
     @Override
@@ -136,9 +145,10 @@ public class ParticipationServiceImpl extends BaseServiceImpl<Participation, Par
     }
 
     @Override
-    public List<Participation> findOwner(UUID channelId) {
+    public List<ParticipationResponseDTO> findOwner(UUID channelId) {
         return repository.findAllByChannelId(channelId).stream()
-                .filter(p -> p.getRole() == Role.ADMIN).toList();
+                .filter(p -> p.getRole() == Role.ADMIN).map(ParticipationResponseDTO::from)
+                .toList();
     }
 
     @Override

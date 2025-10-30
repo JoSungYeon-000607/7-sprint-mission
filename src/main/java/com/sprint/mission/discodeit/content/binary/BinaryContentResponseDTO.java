@@ -4,7 +4,7 @@ import com.sprint.mission.discodeit.config.enums.ContentOwner;
 
 import java.util.UUID;
 
-public record BinaryContentDTO(
+public record BinaryContentResponseDTO(
         UUID ownerId,
         ContentOwner owner,
         String fileName,
@@ -12,8 +12,8 @@ public record BinaryContentDTO(
         Long fileType
 
 ) {
-    public static BinaryContentDTO from(BinaryContent content) {
-        return new BinaryContentDTO(
+    public static BinaryContentResponseDTO from(BinaryContent content) {
+        return new BinaryContentResponseDTO(
             content.getOwnerId(),
             content.getOwner(),
             content.getFileName(),

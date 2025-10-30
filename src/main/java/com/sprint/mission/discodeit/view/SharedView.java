@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.view;
 
 import com.sprint.mission.discodeit.channel.Channel;
-import com.sprint.mission.discodeit.participation.Participation;
+import com.sprint.mission.discodeit.participation.dto.ParticipationResponseDTO;
 import com.sprint.mission.discodeit.user.User;
 import com.sprint.mission.discodeit.channel.ChannelService;
 import com.sprint.mission.discodeit.participation.ParticipationService;
@@ -79,8 +79,8 @@ public class SharedView {
      * @param user 참여 정보를 조회할 User 객체
      * @return 선택된 Participation 객체, 취소 시 null을 반환합니다.
      */
-    public Participation selectParticipationFromUser(User user) {
-        List<Participation> participations = participationService.findParticipationsByUserId(user.getId());
+    public ParticipationResponseDTO selectParticipationFromUser(User user) {
+        List<ParticipationResponseDTO> participations = participationService.findParticipationsByUserId(user.getId());
 
         if (participations.isEmpty()) {
             System.out.println("해당 유저가 참여중인 채널 정보가 없습니다.");
@@ -89,12 +89,12 @@ public class SharedView {
 
         System.out.println("--- 채널 참여 정보 선택 ---");
         for (int i = 0; i < participations.size(); i++) {
-            Participation p = participations.get(i);
+            ParticipationResponseDTO p = participations.get(i);
             try {
-                Channel c = channelService.findById(p.getChannelId());
-                System.out.printf("%d. 채널: %s (닉네임: %s)\n", i + 1, c.getChannelName(), p.getNickname());
+                Channel c = channelService.findById(p.channelId());
+                System.out.printf("%d. 채널: %s (닉네임: %s)\n", i + 1, c.getChannelName(), p.nickname());
             } catch (Exception e) {
-                System.out.printf("%d. 알 수 없는 채널 (ID: %s)\n", i + 1, p.getChannelId());
+                System.out.printf("%d. 알 수 없는 채널 (ID: %s)\n", i + 1, p.channelId());
             }
         }
         System.out.println("0. 취소");

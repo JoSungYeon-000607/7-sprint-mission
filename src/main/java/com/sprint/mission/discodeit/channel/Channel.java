@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.channel;
 
 import com.sprint.mission.discodeit.common.entity.BaseEntity;
 import com.sprint.mission.discodeit.config.enums.ChannelType;
+import lombok.Getter;
 
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import java.util.UUID;
  * 채널의 정보를 담는 핵심 도메인 엔티티입니다.
  * 채널의 생성과 상태 변경에 대한 비즈니스 로직을 포함합니다.
  */
+@Getter
 public class Channel extends BaseEntity<UUID> {
 
     /**
@@ -93,24 +95,6 @@ public class Channel extends BaseEntity<UUID> {
         if (isChanged) {
             super.updateTimestamp();
         }
-    }
-
-    // --- Getters ---
-
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public boolean isPrivate() {
-        return isPrivate;
-    }
-
-    public ChannelType getChannelType() {
-        return channelType;
-    }
-
-    public String getTopic() {
-        return topic;
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.sprint.mission.discodeit.participation;
 
 import com.sprint.mission.discodeit.common.service.BaseService;
 import com.sprint.mission.discodeit.config.enums.Role;
+import com.sprint.mission.discodeit.participation.dto.ParticipationRequestDTO;
+import com.sprint.mission.discodeit.participation.dto.ParticipationResponseDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,17 +13,10 @@ import java.util.UUID;
  */
 public interface ParticipationService extends BaseService<Participation, ParticipationDualKey> {
 
-    /**
-     * 특정 사용자를 채널에 참여시킵니다.
-     *
-     * @param channelId 참여할 채널의 ID
-     * @param userId    참여할 사용자의 ID
-     * @param nickname  해당 채널에서 사용할 닉네임 (선택 사항)
-     * @return 생성된 Participation 참여 관계 정보
-     */
-    Participation joinChannel(UUID channelId, UUID userId, String nickname);
 
-    Participation setReadAt(UUID channelId, UUID userId);
+    ParticipationResponseDTO joinChannel(ParticipationRequestDTO requestDTO);
+
+    ParticipationResponseDTO setReadAt(UUID channelId, UUID userId);
 
     /**
      * 사용자 스스로 채널에서 나갑니다.
@@ -54,7 +49,7 @@ public interface ParticipationService extends BaseService<Participation, Partici
      * @param channelId 조회할 채널의 ID
      * @return 해당 채널의 모든 Participation 목록
      */
-    List<Participation> findParticipationsByChannelId(UUID channelId);
+    List<ParticipationResponseDTO> findParticipationsByChannelId(UUID channelId);
 
     /**
      * (추천) 특정 채널의 소유자를 찾습니다.
@@ -63,7 +58,7 @@ public interface ParticipationService extends BaseService<Participation, Partici
      * @return 채널의 소유자(OWNER)인 User 객체
      * @throws java.util.NoSuchElementException 소유자를 찾을 수 없는 경우
      */
-    List<Participation> findOwner(UUID channelId);
+    List<ParticipationResponseDTO> findOwner(UUID channelId);
 
     /**
      * 특정 사용자가 참여하고 있는 모든 채널의 참여 정보를 조회합니다.
@@ -71,7 +66,7 @@ public interface ParticipationService extends BaseService<Participation, Partici
      * @param userId 조회할 사용자의 ID
      * @return 해당 사용자의 모든 Participation 목록
      */
-    List<Participation> findParticipationsByUserId(UUID userId);
+    List<ParticipationResponseDTO> findParticipationsByUserId(UUID userId);
 
     /**
      * 특정 사용자가 특정 채널에 참여하고 있는지 확인합니다.

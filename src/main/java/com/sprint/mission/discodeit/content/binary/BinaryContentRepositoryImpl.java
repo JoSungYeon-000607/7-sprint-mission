@@ -1,10 +1,15 @@
 package com.sprint.mission.discodeit.content.binary;
 
 import com.sprint.mission.discodeit.common.repository.impl.BaseRepositoryImpl;
+import org.springframework.stereotype.Repository;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+@Repository
 public class BinaryContentRepositoryImpl extends BaseRepositoryImpl<BinaryContent, UUID> implements BinaryContentRepository {
     @Override
     public List<BinaryContent> findAllByOwnerId(UUID ownerId) {

@@ -1,6 +1,8 @@
 package com.sprint.mission.discodeit.user;
 
 import com.sprint.mission.discodeit.common.service.BaseService;
+import com.sprint.mission.discodeit.user.dto.UserProfileUpdateDTO;
+import com.sprint.mission.discodeit.user.dto.UserRequestDTO;
 import com.sprint.mission.discodeit.user.dto.UserResponseDTO;
 
 import java.util.UUID;
@@ -11,28 +13,9 @@ import java.util.UUID;
  */
 public interface UserService extends BaseService<User, UUID> {
 
-    /**
-     * 새로운 사용자를 생성하고 저장소에 저장합니다.
-     *
-     * @param username   사용자 이름 (필수, 고유해야 함)
-     * @param password   비밀번호 (필수)
-     * @param email      이메일 (필수)
-     * @param nickname   닉네임 (선택)
-     * @param phoneNum   전화번호 (선택)
-     * @return 생성된 User 객체
-     */
-    User createUser(String username, String password, String email, String nickname, String phoneNum);
+    User createUser(UserRequestDTO requestDTO);
 
-    /**
-     * 특정 사용자의 프로필 정보(닉네임, 이메일, 전화번호)를 수정합니다.
-     *
-     * @param userId     수정할 사용자의 고유 ID
-     * @param nickname   새로운 닉네임
-     * @param email      새로운 이메일
-     * @param phoneNum   새로운 전화번호
-     * @return 수정이 완료된 User 객체
-     */
-    UserResponseDTO updateProfile(UUID userId, String nickname, String email, String phoneNum);
+    UserResponseDTO updateProfile(UUID userId, UserProfileUpdateDTO requestDTO);
 
 
     /**

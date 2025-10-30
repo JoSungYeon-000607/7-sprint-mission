@@ -12,8 +12,8 @@ import java.util.UUID;
 @Getter
 public class BinaryContent extends BaseEntity<UUID> {
 
-    private UUID ownerId;
-    private ContentOwner owner;
+    private final UUID ownerId;
+    private final ContentOwner owner;
     private String fileName;
     private String filePath;
     private String fileType;
@@ -64,6 +64,5 @@ public class BinaryContent extends BaseEntity<UUID> {
             throw new IllegalArgumentException("저장 경로는 null일 수 없습니다.");
         }
         this.filePath = newPath;
-        super.updateTimestamp();
     }
 }

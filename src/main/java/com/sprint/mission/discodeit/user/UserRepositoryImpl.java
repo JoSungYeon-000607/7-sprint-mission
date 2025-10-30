@@ -59,4 +59,10 @@ public class UserRepositoryImpl extends BaseRepositoryImpl<User, UUID> implement
         return dataMap.values().stream()
                 .anyMatch(user -> !user.isDeleted() && user.getUsername().equals(username)); // 두 조건을 한 번에 확인
     }
+
+    @Override
+    public boolean existsByUserNickName(String nickName) {
+        return dataMap.values().stream()
+                .anyMatch(user -> user.getNickname().equals(nickName));
+    }
 }

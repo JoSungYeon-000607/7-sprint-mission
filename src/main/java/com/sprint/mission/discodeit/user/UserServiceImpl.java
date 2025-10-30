@@ -1,6 +1,9 @@
 package com.sprint.mission.discodeit.user;
 
 import com.sprint.mission.discodeit.common.service.impl.BaseServiceImpl;
+import com.sprint.mission.discodeit.participation.dto.ParticipationRequestDTO;
+import com.sprint.mission.discodeit.user.dto.UserProfileUpdateDTO;
+import com.sprint.mission.discodeit.user.dto.UserRequestDTO;
 import com.sprint.mission.discodeit.user.dto.UserResponseDTO;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +20,18 @@ public class UserServiceImpl extends BaseServiceImpl<User, UUID, UserRepository>
     }
 
     @Override
-    public User createUser(String username, String password, String email, String nickname, String phoneNum) {
+    public User createUser(UserRequestDTO requestDTO) {
+        String username = requestDTO.nickname();
+        String password = requestDTO.password();
+        String email = requestDTO.email();
+        String nickname = requestDTO.nickname();
+        String phoneNum = requestDTO.phoneNum();
         // 1. '삭제된 기록을 포함하여' 같은 이름의 사용자가 있는지 Repository에서 직접 조회합니다.
         Optional<User> existingUser = repository.findByUsername(username);
+
+        if(nicknameDuplicateCheck(nickname)){
+            throw new IllegalArgumentException(nickname+"은(는) 이미 존재하는 닉네임입니다.");
+        }
 
         if (repository.existsByUsername(username)) {
             // 2a. 기존 사용자가 있는 경우
@@ -41,10 +53,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, UUID, UserRepository>
     }
 
     @Override
-    public UserResponseDTO updateProfile(UUID userId, String nickname, String email, String phoneNum) {
-        // 1. ID로 사용자를 찾아(Find),
+    public UserResponseDTO updateProfile(UUID userId, UserProfileUpdateDTO requestDTO) {
+        String nickname = requestDTO.nickname();
+        String email = requestDTO.email();
+        String phoneNum = requestDTO.phoneNum();
+
+        if(nicknameDuplicateCheck(nickname)){
+            throw new IllegalArgumentException(nickname+"은(는) 이미 존재하는 닉네임입니다.");
+        }
+
         User user = findByIdNonDel(userId);
-        // 2. 엔티티의 상태를 변경(Modify)하고 저장(Save)합니다.
+
         user.updateProfile(nickname, email, phoneNum);
         return UserResponseDTO.fromEntity(save(user));
     }
@@ -82,4 +101,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, UUID, UserRepository>
         return repository.existsByUsernameNonDel(username);
     }
 
+
+    private boolean nicknameDuplicateCheck(String nickname) {
+        return repository.existsByUserNickName(nickname);
+    }
 }

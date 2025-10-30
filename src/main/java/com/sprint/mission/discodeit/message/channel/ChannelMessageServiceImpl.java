@@ -2,6 +2,8 @@ package com.sprint.mission.discodeit.message.channel;
 
 import com.sprint.mission.discodeit.common.service.impl.BaseServiceImpl;
 import com.sprint.mission.discodeit.config.exception.UserNotInChannelException;
+import com.sprint.mission.discodeit.message.channel.dto.ChannelMSGRequestDTO;
+import com.sprint.mission.discodeit.message.channel.dto.ChannelMSGResponseDTO;
 import com.sprint.mission.discodeit.participation.ParticipationDualKey;
 import com.sprint.mission.discodeit.participation.ParticipationService;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,10 @@ public class ChannelMessageServiceImpl extends BaseServiceImpl<ChannelMessage, U
     }
 
     @Override
-    public ChannelMessage sendMessage(UUID channelId, UUID senderId, String message) {
+    public ChannelMSGResponseDTO sendMessage(ChannelMSGRequestDTO requestDTO) {
+        UUID channelId = requestDTO.channelId();
+        UUID senderId = requestDTO.senderId();
+        String message = requestDTO.message();
         // 1. 비즈니스 규칙 검증: 메시지를 보내는 사용자가 해당 채널에 참여하고 있는지 확인
         ParticipationDualKey participationId = new ParticipationDualKey(channelId, senderId);
         if (!participationService.existsByIdNonDel(participationId)) {
@@ -31,13 +36,14 @@ public class ChannelMessageServiceImpl extends BaseServiceImpl<ChannelMessage, U
         ChannelMessage newChannelMessage = ChannelMessage.create(channelId, senderId, message);
 
         // 3. 데이터 저장
-        save(newChannelMessage);
-        return newChannelMessage;
+        return ChannelMSGResponseDTO.from(save(newChannelMessage));
     }
 
     @Override
-    public List<ChannelMessage> getMessagesByChannel(UUID channelId) {
-        return repository.findAllByChannelId(channelId);
+    public List<ChannelMSGResponseDTO> getMessagesByChannel(UUID channelId) {
+        return repository.findAllByChannelId(channelId).stream()
+                .map(ChannelMSGResponseDTO::from)
+                .toList();
     }
 
     @Override
