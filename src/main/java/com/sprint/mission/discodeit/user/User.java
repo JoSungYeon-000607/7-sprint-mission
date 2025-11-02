@@ -25,7 +25,6 @@ public class User extends BaseEntity<UUID> {
     /**
      * 암호화되어 저장되는 사용자 비밀번호
      */
-    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String password;
     /**
@@ -41,7 +40,6 @@ public class User extends BaseEntity<UUID> {
      */
     private String phoneNum;
 
-    private UserStatus userStatus;
     /**
      * 외부에서 `new User()`를 통해 불완전한 객체를 생성하는 것을 막기 위해 생성자를 protected로 선언합니다.
      * 객체 생성은 반드시 `create()` 정적 팩토리 메서드를 통해서만 이루어져야 합니다.
@@ -56,18 +54,18 @@ public class User extends BaseEntity<UUID> {
      * 필요한 모든 정보를 받아 유효성 검사를 거친 후, 완전한 상태의 객체를 생성하여 반환합니다.
      *
      * @param username    사용자 이름 (필수)
-     * @param rawPassword 암호화되지 않은 비밀번호 (필수)
+     * @param password 암호화되지 않은 비밀번호 (필수)
      * @param email       이메일 (필수)
      * @param nickname    닉네임 (선택)
      * @param phoneNum    전화번호 (선택)
      * @return 완전히 생성된 User 객체
      */
-    public static User createUser(String username, String rawPassword, String email, String nickname, String phoneNum) {
+    public static User createUser(String username, String password, String email, String nickname, String phoneNum) {
         // Guard Clauses: 객체 생성 전 필수 값들을 검증합니다.
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("사용자 이름은 필수입니다.");
         }
-        if (rawPassword == null || rawPassword.isBlank()) {
+        if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("비밀번호는 필수입니다.");
         }
         if (nickname == null || nickname.isBlank()) {
@@ -81,7 +79,7 @@ public class User extends BaseEntity<UUID> {
 
         // 전달받은 인자로 필드 값을 설정합니다.
         user.username = username;
-        user.password = passwordEncrypt(rawPassword);
+        user.password = password;
         user.email = email;
         user.nickname = nickname;
         user.phoneNum = phoneNum;
@@ -128,24 +126,8 @@ public class User extends BaseEntity<UUID> {
         if (newPassword == null || newPassword.length() < 8) {
             throw new IllegalArgumentException("비밀번호는 8자 이상이어야 합니다.");
         }
-        this.password = passwordEncrypt(newPassword);
+        this.password = newPassword;
         super.updateTimestamp();
-    }
-
-    // --- 상태 변경 비즈니스 메서드 ---
-
-
-
-    // --- private 헬퍼 메서드 ---
-
-    /**
-     * 비밀번호를 암호화하는 내부 헬퍼 메서드입니다.
-     * @param password 암호화할 원본 비밀번호
-     * @return 암호화된 비밀번호
-     */
-    private static String passwordEncrypt(String password) {
-        // TODO: 실제 프로덕션에서는 bcrypt와 같은 검증된 해시 알고리즘을 사용해야 합니다.
-        return "encrypted_" + password;
     }
 
 

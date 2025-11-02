@@ -19,7 +19,7 @@ public class UserStatusServiceImpl extends BaseServiceImpl<UserStatus, UUID, Use
 
     @Override
     public UserStatusDTO create(UUID userId) {
-        return UserStatusDTO.fromEntity(UserStatus.create(userId));
+        return UserStatusDTO.fromEntity(save(UserStatus.create(userId)));
     }
 
     @Override

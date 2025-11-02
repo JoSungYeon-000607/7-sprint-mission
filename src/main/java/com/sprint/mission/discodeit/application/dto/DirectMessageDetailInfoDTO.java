@@ -1,4 +1,5 @@
 package com.sprint.mission.discodeit.application.dto;
 
-public record DirectMessageDetailInfoDTO() {
+public record DirectMessageDetailInfoDTO(
+) {
 }

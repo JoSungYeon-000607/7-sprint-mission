@@ -34,4 +34,6 @@ public interface DirectMessageRepository extends BaseRepository<DirectMessage, U
      * @param senderId 첫 번째 사용자 ID
      */
     void deleteAllBySenderId(UUID senderId);
+
+    int countNotReadDirectMessage(UUID receiverId);
 }

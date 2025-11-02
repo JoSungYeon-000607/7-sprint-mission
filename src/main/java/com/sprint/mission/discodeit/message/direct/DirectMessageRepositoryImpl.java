@@ -3,8 +3,10 @@ package com.sprint.mission.discodeit.message.direct;
 import com.sprint.mission.discodeit.common.repository.impl.BaseRepositoryImpl;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -43,4 +45,19 @@ public class DirectMessageRepositoryImpl extends BaseRepositoryImpl<DirectMessag
         findBySenderId(senderId).stream()
                 .map(DirectMessage::getId).forEach(this::deleteById);
     }
+
+    @Override
+    public int countNotReadDirectMessage(UUID receiverId) {
+        Map<UUID, List<DirectMessage>> messagemap = findByReceiverId(receiverId).stream().collect(Collectors.groupingBy(DirectMessage::getSenderId));
+        long fullCount = messagemap.values().stream()
+                .mapToLong(list -> list.stream()
+                .filter(msg -> msg.getCreatedAt().equals(msg.getLastReadAt()))
+                .count()
+                )
+                .sum();
+        return Math.toIntExact(fullCount);
+    }
+
+
+
 }

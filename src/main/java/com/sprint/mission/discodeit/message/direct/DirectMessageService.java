@@ -22,4 +22,6 @@ public interface DirectMessageService extends BaseService<DirectMessage, UUID> {
     List<DirectMSGResponseDTO> getConversation(UUID userOneId, UUID userTwoId);
 
     void delAllBySenderId(UUID senderId);
+
+    int getUnreadDirectMessageCount(UUID receiverId);
 }

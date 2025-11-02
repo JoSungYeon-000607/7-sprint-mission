@@ -16,8 +16,6 @@ public record UserResponseDTO(
 
         String phoneNum,
 
-        UserStatusDTO userStatus,
-
         Instant createdAt,
 
         Instant updatedAt
@@ -28,7 +26,6 @@ public record UserResponseDTO(
                 User.getEmail(),
                 User.getNickname(),
                 User.getPhoneNum(),
-                UserStatusDTO.fromEntity(User.getUserStatus()),
                 User.getCreatedAt(),
                 User.getUpdatedAt()
         );

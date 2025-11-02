@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.message.direct;
 
 import com.sprint.mission.discodeit.common.entity.BaseEntity;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public class DirectMessage extends BaseEntity<UUID> {
@@ -9,7 +10,7 @@ public class DirectMessage extends BaseEntity<UUID> {
     private UUID receiverId;
     private UUID senderId;
     private String message;
-
+    private Instant lastReadAt;
     /**
      * 외부에서의 직접적인 생성을 막고, static create 메서드를 통하도록 강제합니다.
      */
@@ -40,6 +41,7 @@ public class DirectMessage extends BaseEntity<UUID> {
         directMessage.senderId = senderId;
         directMessage.receiverId = receiverId;
         directMessage.message = message;
+        directMessage.lastReadAt = directMessage.getCreatedAt();
         return directMessage;
     }
 
@@ -56,6 +58,8 @@ public class DirectMessage extends BaseEntity<UUID> {
     public String getMessage() {
         return message;
     }
+
+    public Instant getLastReadAt() {return lastReadAt;}
 
     @Override
     public String toString() {

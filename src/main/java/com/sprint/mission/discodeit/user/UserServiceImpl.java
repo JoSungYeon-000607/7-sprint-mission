@@ -14,15 +14,17 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl extends BaseServiceImpl<User, UUID, UserRepository> implements UserService {
 
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         super(userRepository);
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public User createUser(UserRequestDTO requestDTO) {
         String username = requestDTO.nickname();
-        String password = requestDTO.password();
+        String password = passwordEncoder.encode(requestDTO.password());
         String email = requestDTO.email();
         String nickname = requestDTO.nickname();
         String phoneNum = requestDTO.phoneNum();

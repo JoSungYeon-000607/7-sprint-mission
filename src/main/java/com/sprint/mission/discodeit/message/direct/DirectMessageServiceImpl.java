@@ -69,4 +69,11 @@ public class DirectMessageServiceImpl extends BaseServiceImpl<DirectMessage, UUI
         }
         repository.deleteAllBySenderId(senderId);
     }
+
+    @Override
+    public int getUnreadDirectMessageCount(UUID receiverId) {
+        return repository.countNotReadDirectMessage(receiverId);
+    }
+
+
 }

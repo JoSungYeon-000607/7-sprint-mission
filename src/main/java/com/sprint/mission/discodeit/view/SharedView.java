@@ -91,10 +91,10 @@ public class SharedView {
         for (int i = 0; i < participations.size(); i++) {
             ParticipationResponseDTO p = participations.get(i);
             try {
-                Channel c = channelService.findById(p.channelId());
+                Channel c = channelService.findById(p.participationDualKey().channelId());
                 System.out.printf("%d. 채널: %s (닉네임: %s)\n", i + 1, c.getChannelName(), p.nickname());
             } catch (Exception e) {
-                System.out.printf("%d. 알 수 없는 채널 (ID: %s)\n", i + 1, p.channelId());
+                System.out.printf("%d. 알 수 없는 채널 (ID: %s)\n", i + 1, p.participationDualKey().channelId());
             }
         }
         System.out.println("0. 취소");

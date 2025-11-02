@@ -31,4 +31,5 @@ public class ChannelMessageRepositoryImpl extends BaseRepositoryImpl<ChannelMess
                 .sorted(Comparator.comparing(ChannelMessage::getCreatedAt))
                 .toList();
     }
+
 }
