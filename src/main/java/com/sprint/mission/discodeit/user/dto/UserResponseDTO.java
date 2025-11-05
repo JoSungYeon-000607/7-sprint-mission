@@ -8,6 +8,8 @@ import java.util.UUID;
 public record UserResponseDTO(
         UUID userId,
 
+        String username,
+
         String email,
 
         String nickname,
@@ -21,6 +23,7 @@ public record UserResponseDTO(
     public static UserResponseDTO fromEntity(User User) {
         return new UserResponseDTO(
                 User.getId(),
+                User.getUsername(),
                 User.getEmail(),
                 User.getNickname(),
                 User.getPhoneNum(),
