@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.user.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.application.dto.UserDetailInfoDTO;
 import com.sprint.mission.discodeit.application.service.UserManagementService;
 import com.sprint.mission.discodeit.user.UserService;
@@ -25,14 +26,25 @@ public class UserController {
     private final UserManagementService userManagementService;
     private final UserService userService;
     private final UserStatusService userStatusService;
+    private final ObjectMapper objectMapper;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> register(
-            @RequestPart("userRequest") @Valid UserRequestDTO requestDTO,
-            @RequestPart(value = "profileImage", required = false) MultipartFile multipartFile) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(requestDTO);
-//        UserResponseDTO responseDTO = userManagementService.createUserWithRelatedData(requestDTO, multipartFile);
+            @RequestBody @Valid UserRequestDTO requestDTO,
+            @RequestBody(required = false) MultipartFile multipartFile
+    ) {
 
+
+        UserResponseDTO responseDTO = userManagementService.createUserWithRelatedData(requestDTO, multipartFile);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteUser(
+            @RequestBody AuthUserDTO authUser
+    ){
+        userManagementService.deleteUserWithRelatedData(authUser.authUserId());
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = "/updateProfile", method = RequestMethod.PUT)
