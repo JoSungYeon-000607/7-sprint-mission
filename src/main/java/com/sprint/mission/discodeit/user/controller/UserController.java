@@ -27,14 +27,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/api/v2/users")
 public class UserController {
 
     private final UserManagementService userManagementService;
     private final UserService userService;
     private final UserStatusService userStatusService;
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> register(
             @RequestPart(value = "userRequest") UserRequestDTO requestDTO,
             @RequestPart(value = "profileImage", required = false) MultipartFile multipartFile
@@ -43,7 +43,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    @RequestMapping(method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteUser(
             @SessionAttribute(SessionConstants.AUTH_USER) AuthUserDTO authUser
     ){
@@ -51,10 +51,11 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/updateProfile", method = RequestMethod.PUT)
+    @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<UserResponseDTO> updateProfile(
             @SessionAttribute(SessionConstants.AUTH_USER) AuthUserDTO authUser,
-            @RequestBody @Valid UserProfileUpdateDTO requestDTO) {
+            @RequestBody @Valid UserProfileUpdateDTO requestDTO,
+            @RequestPart(value = "profileImage", required = false) MultipartFile multipartFile) {
 
         UserResponseDTO responseDTO = userService.updateProfile(authUser.authUserId(), requestDTO);
 
@@ -71,38 +72,13 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/allusers", method = RequestMethod.GET)
+    @RequestMapping(value = "/all", method = RequestMethod.GET)
     public ResponseEntity<List<UserDetailInfo>> getAllUsers() {
         List<UUID> ids = userService.findAll().stream()
                 .map(User::getId).toList();
         List<UserDetailInfo> users = ids.stream()
                 .map(userManagementService::getUserDetailInfo).toList();
         return ResponseEntity.ok(users);
-    }
-
-    @RequestMapping(value = "/status", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateUserStatus(
-            @SessionAttribute(SessionConstants.AUTH_USER) AuthUserDTO authUser,
-            @RequestBody UserStatusRequestDTO requestDTO) {
-        UUID userId = authUser.authUserId();
-        UserStatusResponseDTO responseDTO;
-        switch (requestDTO.status()) {
-            case ONLINE:
-                 responseDTO = userStatusService.toOnline(userId);
-                break;
-            case OFFLINE:
-                responseDTO = userStatusService.toOffline(userId);
-                break;
-            case AFK:
-                responseDTO = userStatusService.toAway(userId);
-                break;
-            case DND:
-                responseDTO = userStatusService.toDoNotDisturb(userId, requestDTO.message());
-                break;
-            default:
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("확인 할 수 없는 상태값입니다.");
-        }
-        return ResponseEntity.ok(responseDTO);
     }
 
     @RequestMapping(value = "/changeusername", method = RequestMethod.PUT)
@@ -125,21 +101,37 @@ public class UserController {
         return ResponseEntity.ok(detailInfoDTO);
     }
 
-    @RequestMapping(value = "/updateprofileimg", method = RequestMethod.PUT)
-    public ResponseEntity<BinaryContentResponse> updateProfileImg(
-            @SessionAttribute(SessionConstants.AUTH_USER) AuthUserDTO authUser,
-            @RequestPart(value = "profileImage", required = false) MultipartFile multipartFile
-            ){
-        BinaryContentResponse responseDTO = userManagementService.updateProfileImg(authUser.authUserId(), multipartFile);
-        return ResponseEntity.ok(responseDTO);
-    }
-
-    @RequestMapping(value = "/userdetails", method = RequestMethod.GET)
+    @RequestMapping(value = "/details", method = RequestMethod.GET)
     public ResponseEntity<UserDetailInfo> getUserDetailInfo(
             @SessionAttribute(SessionConstants.AUTH_USER) AuthUserDTO authUser
             ){
         UserDetailInfo detailInfoDTO = userManagementService.getUserDetailInfo(authUser.authUserId());
         return ResponseEntity.ok(detailInfoDTO);
+    }
+
+    @RequestMapping(value = "/status", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateUserStatus(
+            @SessionAttribute(SessionConstants.AUTH_USER) AuthUserDTO authUser,
+            @RequestBody UserStatusRequestDTO requestDTO) {
+        UUID userId = authUser.authUserId();
+        UserStatusResponseDTO responseDTO;
+        switch (requestDTO.status()) {
+            case ONLINE:
+                responseDTO = userStatusService.toOnline(userId);
+                break;
+            case OFFLINE:
+                responseDTO = userStatusService.toOffline(userId);
+                break;
+            case AFK:
+                responseDTO = userStatusService.toAway(userId);
+                break;
+            case DND:
+                responseDTO = userStatusService.toDoNotDisturb(userId, requestDTO.message());
+                break;
+            default:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("확인 할 수 없는 상태값입니다.");
+        }
+        return ResponseEntity.ok(responseDTO);
     }
 }
 
