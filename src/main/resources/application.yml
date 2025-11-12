@@ -1,3 +1,7 @@
 spring:
   application:
     name: discodeit
+
+jwt:
+  secret: "my-super-strong-and-long-secret-key-for-jwt-12345"
+  access-token-validity-in-seconds: 86400 # 24 hours

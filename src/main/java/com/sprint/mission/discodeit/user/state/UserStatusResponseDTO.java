@@ -6,17 +6,18 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record UserStatusResponseDTO(
-        UUID id,
-        Status currentStatus,
-        String message,
-        Instant lastOnlineAt
+    String id,
+    Status currentStatus,
+    String message,
+    Instant lastOnlineAt
 ) {
-    public static UserStatusResponseDTO fromEntity(UserStatus UserStatus) {
-        return new UserStatusResponseDTO(
-                UserStatus.getId(),
-                UserStatus.getCurrentStatus(),
-                UserStatus.getCustomStatusMessage(),
-                UserStatus.getLastOnlineAt()
-        );
-    }
+
+  public static UserStatusResponseDTO fromEntity(UserStatus UserStatus) {
+    return new UserStatusResponseDTO(
+        UserStatus.getId().toString(),
+        UserStatus.getCurrentStatus(),
+        UserStatus.getCustomStatusMessage(),
+        UserStatus.getLastOnlineAt()
+    );
+  }
 }
