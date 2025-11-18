@@ -8,22 +8,21 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record ParticipationResponseDTO(
-        ParticipationDualKey participationDualKey,
-        String nickname,
-        Role role,
-        Instant lastReadAt,
-        Instant updateAt,
-        Instant createAt
+    ParticipationDualKey participationDualKey,
+    String nickname,
+    Instant lastReadAt,
+    Instant updateAt,
+    Instant createAt
 ) {
-    public static ParticipationResponseDTO from(Participation participation) {
-        return new ParticipationResponseDTO(
-                participation.getId(),
-                participation.getNickname(),
-                participation.getRole(),
-                participation.getLastReadAt(),
-                participation.getUpdatedAt(),
-                participation.getCreatedAt()
-        );
-    }
+
+  public static ParticipationResponseDTO from(Participation participation) {
+    return new ParticipationResponseDTO(
+        participation.getId(),
+        participation.getNickname(),
+        participation.getLastReadAt(),
+        participation.getUpdatedAt(),
+        participation.getCreatedAt()
+    );
+  }
 
 }

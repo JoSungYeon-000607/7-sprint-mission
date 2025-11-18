@@ -9,37 +9,47 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
-public class ParticipationRepositoryImpl extends BaseRepositoryImpl<Participation, ParticipationDualKey> implements ParticipationRepository {
+public class ParticipationRepositoryImpl extends
+    BaseRepositoryImpl<Participation, ParticipationDualKey> implements ParticipationRepository {
 
-    @Override
-    public List<Participation> findAllByChannelId(UUID channelId) {
-        return dataMap.values().stream()
-                .filter(p -> !p.isDeleted() && p.getChannelId().equals(channelId))
-                .collect(Collectors.toList());
-    }
+  @Override
+  public Participation findByTempId(UUID tempId) {
+    return dataMap.values().stream()
+        .filter(p -> p.getTempId().equals(tempId))
+        .findFirst()
+        .orElse(null);
+  }
 
-    @Override
-    public List<Participation> findAllByUserId(UUID userId) {
-        return dataMap.values().stream()
-                .filter(p -> !p.isDeleted() && p.getUserId().equals(userId))
-                .collect(Collectors.toList());
-    }
-    @Override
-    public List<Participation> findAllByChannelIdIsDel(UUID channelId) {
-        return dataMap.values().stream()
-                .filter(p -> p.isDeleted() && p.getChannelId().equals(channelId))
-                .collect(Collectors.toList());
-    }
+  @Override
+  public List<Participation> findAllByChannelId(UUID channelId) {
+    return dataMap.values().stream()
+        .filter(p -> !p.isDeleted() && p.getChannelId().equals(channelId))
+        .collect(Collectors.toList());
+  }
 
-    @Override
-    public List<Participation> findAllByUserIdIsDel(UUID userId) {
-        return dataMap.values().stream()
-                .filter(p -> p.isDeleted() && p.getUserId().equals(userId))
-                .collect(Collectors.toList());
-    }
+  @Override
+  public List<Participation> findAllByUserId(UUID userId) {
+    return dataMap.values().stream()
+        .filter(p -> !p.isDeleted() && p.getUserId().equals(userId))
+        .collect(Collectors.toList());
+  }
 
-    @Override
-    public DataKey getDataKey() {
-        return DataKey.PARTICIPATION;
-    }
+  @Override
+  public List<Participation> findAllByChannelIdIsDel(UUID channelId) {
+    return dataMap.values().stream()
+        .filter(p -> p.isDeleted() && p.getChannelId().equals(channelId))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<Participation> findAllByUserIdIsDel(UUID userId) {
+    return dataMap.values().stream()
+        .filter(p -> p.isDeleted() && p.getUserId().equals(userId))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public DataKey getDataKey() {
+    return DataKey.PARTICIPATION;
+  }
 }
